@@ -1,7 +1,8 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from strategy_metadata.type import VolMakerMetadata
 from typing import TypedDict
 from pydantic import BaseModel
+from strategies.base import BaseStrategy
 
 class BaseVolMakerConfig(BaseModel):
     min_trade_size: float
@@ -14,7 +15,7 @@ class SenderRecipientInfo(TypedDict):
     recipient: str
     fund_destination: str
 
-class BaseVolMaker(ABC):
+class BaseVolMaker(BaseStrategy):
 
     def __init__(self, metadata: VolMakerMetadata):
         self.metadata = metadata
@@ -37,8 +38,4 @@ class BaseVolMaker(ABC):
 
     @abstractmethod
     async def _make_trade(self, sender: str, recipient: str, fund_des: str):
-        pass
-
-    @abstractmethod
-    async def run(self):
         pass

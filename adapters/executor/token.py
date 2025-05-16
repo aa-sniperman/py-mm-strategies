@@ -10,7 +10,7 @@ class ExecutorTokenHelper:
             "account": account,
             "amount": str(amount)
         }
-        response = await client.post('/order/unwrap', params=body)
+        response = await client.post('/order/unwrap', data=body)
         return response.json()
 
     @staticmethod
@@ -20,7 +20,7 @@ class ExecutorTokenHelper:
             "account": account,
             "amount": str(amount)
         }
-        response = await client.post('/order/wrap', params=body)
+        response = await client.post('/order/wrap', data=body)
         return response.json()
 
     @staticmethod
@@ -32,7 +32,7 @@ class ExecutorTokenHelper:
             "recipient": recipient,
             "amount": str(amount)
         }
-        response = await client.post('/order/transfer', params=body)
+        response = await client.post('/order/transfer', data=body)
         return response.json()
 
     @staticmethod
@@ -58,5 +58,5 @@ class ExecutorTokenHelper:
             "amounts": filter_amounts
         }
 
-        response = await client.post('/order/batch-transfer', params=body)
+        response = await client.post('/order/batch-transfer', data=body)
         return response.json()

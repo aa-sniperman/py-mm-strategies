@@ -1,0 +1,1 @@
+{"chain": "arbitrum", "account": "0x18de18b00Fd291dd76457002a26FF7cA32f0D449", "tokenIn": "0x82aF49447D8a07e3bd95BD0d56f35241523fBab1", "tokenOut": "0xBfbCFe8873fE28Dfa25f1099282b088D52bbAD9C", "recipient": "0x33C004c5c40f9F5eeA3ACE60a2C57aFDFC89D28f", "protocol": "camelot-v2", "amountIn": "0.042729801", "amountOutMin": "0"}

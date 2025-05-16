@@ -11,7 +11,7 @@ from token_configs import TokenConfig
 from adapters.data_layer import DataLayerAdapter
 from adapters.executor.swap import ExecutorSwap
 from adapters.executor.token import ExecutorTokenHelper
-from telebot import send_message
+from bot import send_message
 from utils.array import weighted_random_choice
 import math
 import time
@@ -32,14 +32,23 @@ class VolMakerV1States(BaseModel):
 
 class VolMakerV1(BaseVolMaker):
     def __init__(self, metadata: VolMakerMetadata):
-        super.__init__(metadata)
-        self.original_makers = load_makers(metadata.key)
+        super().__init__(metadata)
+        self.original_makers = load_makers(metadata["key"])
         self.makers = []
-        self.base_token_config = TokenConfig[metadata.base]
-        self.quote_token_config = TokenConfig[metadata.quote]
+        self.base_token_config = TokenConfig[metadata["base"]]
+        self.quote_token_config = TokenConfig[metadata["quote"]]
+        self.states = VolMakerV1States(
+            quote_price=0,
+            base_price=0,
+            cur_1h_vol=0,
+            cur_24h_vol=0,
+            balances=[],
+        )
 
     def _update_params(self):
-        raw = get_strategy_params(self.metadata.key)
+        print(self.metadata)
+        raw = get_strategy_params(self.metadata["key"])
+
         self.params = VolMakerV1Config(
             target_vol_1h=float(raw["targetVol1h"]),
             min_trade_size=float(raw["minSize"]),
@@ -51,13 +60,13 @@ class VolMakerV1(BaseVolMaker):
     def _update_states(self):
         try:
             base_market_data = DataLayerAdapter.get_market_data(
-                self.metadata.chain, self.base_token_config.pair
+                self.metadata["chain"], self.base_token_config.pair
             )
             quote_market_data = DataLayerAdapter.get_market_data(
-                self.metadata.chain, self.quote_token_config.pair
+                self.metadata["chain"], self.quote_token_config.pair
             )
             raw_balances = DataLayerAdapter.get_balances(
-                self.metadata.chain,
+                self.metadata["chain"],
                 self.original_makers,
                 [self.base_token_config.address, self.quote_token_config.address],
                 ["base", "quote"],
@@ -86,7 +95,7 @@ class VolMakerV1(BaseVolMaker):
                 balances=[p["balance"] for p in paired[: self.params.max_wallets_num]],
             )
         except Exception as e:
-            send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
+            send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
 
     def _pick_sender_and_recipient(self):
         min_trade_size = self.params.min_trade_size
@@ -101,7 +110,7 @@ class VolMakerV1(BaseVolMaker):
 
         if len(eligible_senders) == 0 or len(eligible_recipients) == 0:
             send_message(
-                f"🚨 {self.metadata.name}: There is no wallet with enough money to trade"
+                f"🚨 {self.metadata["name"]}: There is no wallet with enough money to trade"
             )
             return None
 
@@ -135,12 +144,12 @@ class VolMakerV1(BaseVolMaker):
     async def _make_trade(self, sender, recipient, fund_des):
 
         sender_quote_bal = DataLayerAdapter.get_balance(
-            self.metadata.chain, sender, self.base_token_config.address
+            self.metadata["chain"], sender, self.base_token_config.address
         )
         sender_quote_value = sender_quote_bal * self.states.quote_price
 
         sender_base_bal = DataLayerAdapter.get_balance(
-            self.metadata.chain, sender, self.quote_token_config.address
+            self.metadata["chain"], sender, self.quote_token_config.address
         )
         sender_base_value = sender_base_bal * self.states.base_price
 
@@ -156,7 +165,7 @@ class VolMakerV1(BaseVolMaker):
             if sender_quote_bal > 0.001:
                 try:
                     await ExecutorTokenHelper.transfer_token(
-                        self.metadata.chain,
+                        self.metadata["chain"],
                         sender,
                         self.quote_token_config.address,
                         math.floor((sender_quote_bal - 0.001) * 1e9) / 1e9,
@@ -164,18 +173,18 @@ class VolMakerV1(BaseVolMaker):
                     )
                     time.sleep(10)
                 except Exception as e:
-                    send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
+                    send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
             if sender_base_bal > 0.001:
                 try:
                     await ExecutorTokenHelper.transfer_token(
-                        self.metadata.chain,
+                        self.metadata["chain"],
                         sender,
                         self.base_token_config.address,
                         math.floor((sender_base_bal - 0.001) * 1e9) / 1e9,
                         fund_des,
                     )
                 except Exception as e:
-                    send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
+                    send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
             return
 
         is_buy: bool
@@ -218,9 +227,9 @@ class VolMakerV1(BaseVolMaker):
                 )
 
                 res = await ExecutorSwap.execute_swap(
-                    chain=self.metadata.chain,
+                    chain=self.metadata["chain"],
                     account=sender,
-                    protocol=self.metadata.protocol,
+                    protocol=self.metadata["protocol"],
                     token_in=(
                         self.quote_token_config.address
                         if is_buy
@@ -228,14 +237,14 @@ class VolMakerV1(BaseVolMaker):
                     ),
                     token_out=self.base_token_config.address,
                     amount_in=trade_amount,
-                    recipeint=recipient,
+                    recipient=recipient,
                 )
 
                 print(res)
 
                 success = True
             except Exception as e:
-                send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
+                send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
                 attempts += 1
                 time.sleep(5)
 
@@ -247,27 +256,33 @@ class VolMakerV1(BaseVolMaker):
         target_vol_24h = self.params.target_vol_1h * 24
         if self.states.cur_24h_vol * 2 < target_vol_24h:
             send_message(
-                f"🚨 {self.metadata.name}: Low vol 24h. Expected: ${target_vol_24h}. Current: ${self.states.cur_24h_vol}"
+                f"🚨 {self.metadata["name"]}: Low vol 24h. Expected: ${target_vol_24h}. Current: ${self.states.cur_24h_vol}"
             )
 
     async def run(self):
-        while(True):
+        while True:
             self._update_params()
             self._update_states()
 
             vol_ok = self._check_vol()
-            if vol_ok:
-                time.sleep(30)
-                continue
+            print(f"Current vol: ${self.states.cur_1h_vol}. Target vol: ${self.params.target_vol_1h}")
+            # if vol_ok:
+            #     print("Done")
+            #     time.sleep(30)
+            #     continue
 
             number_of_trades = random.randint(2, 4)
 
             print(f"Making vol with {number_of_trades} random trades...")
-            for i in 0..number_of_trades:
+            for i in range(number_of_trades):
                 self._update_states()
                 wallets = self._pick_sender_and_recipient()
                 if wallets is not None:
-                    print(f"Picked sender: {wallets.sender}. Picked recipient: {wallets.recipient}")
-                    await self._make_trade(wallets.sender, wallets.recipient, wallets.fund_destination)
+                    print(
+                        f"Picked sender: {wallets["sender"]}. Picked recipient: {wallets["recipient"]}"
+                    )
+                    await self._make_trade(
+                        wallets["sender"], wallets["recipient"], wallets["fund_destination"]
+                    )
 
             time.sleep(5)

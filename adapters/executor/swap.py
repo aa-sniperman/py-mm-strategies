@@ -10,19 +10,21 @@ class ExecutorSwap:
         token_in: str,
         token_out: str,
         amount_in: float,
-        min_amount_out: Optional[float],
-        recipeint: Optional[str]
+        min_amount_out: Optional[float] = None,
+        recipient: Optional[str] = None
     ): 
         body = {
             "chain": chain,
             "account": account,
             "tokenIn": token_in,
             "tokenOut": token_out,
-            "recipient": recipeint if recipeint else account,
+            "recipient": recipient if recipient else account,
             "protocol": protocol,
             "amountIn": str(amount_in),
             "amountOutMin": str(min_amount_out) if min_amount_out else "0"
         }
 
-        response = await client.post('/order/swap', params=body)
+        print(body)
+
+        response = await client.post('/order/swap', data=body)
         return response.json()

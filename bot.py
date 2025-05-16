@@ -1,9 +1,9 @@
-import telebot
+from telebot import TeleBot
 from settings import settings
 
 WHITELISTED_CHAT_IDS = [5455613873, 1484119212, 7661814523]
 
-bot = telebot.TeleBot(settings.telegram.bot_token)
+bot = TeleBot(settings.telegram.bot_token)
 
 def send_message(msg: str):
     for user_id in WHITELISTED_CHAT_IDS:
