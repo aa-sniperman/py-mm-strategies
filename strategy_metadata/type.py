@@ -20,3 +20,4 @@ def load_strategy_metadata(file_name: str):
     file_path = PROJECT_ROOT / f"{file_name}"
     with open(file_path, "r") as f:
         data = json.load(f)
+        return data

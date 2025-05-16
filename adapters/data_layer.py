@@ -1,7 +1,13 @@
 import redis
 import json
 from settings import settings
-from typing import List, Dict
+from typing import List, Dict, TypedDict
+
+class MarketDataInfo(TypedDict):
+    price: float
+    volume_1h: float
+    volume_24h: str
+
 
 dl_redis_client = redis.Redis(
     host=settings.redis.dl_host,
@@ -12,17 +18,18 @@ dl_redis_client = redis.Redis(
 )
 
 
+
 class DataLayerAdapter:
     @staticmethod
-    def get_market_data(chain: str, pair: str):
+    def get_market_data(chain: str, pair: str) -> MarketDataInfo:
         key = f"pair:{chain}:dexscreener"
         cached = dl_redis_client.get(key)
         parsed = json.loads(cached)
         pair_data = parsed[pair]
         return {
-            "price": pair_data["priceUSD"],
-            "volume_1h": pair_data["volume"]["h1"],
-            "volume_24h": pair_data["volume"]["h24"],
+            "price": float(pair_data["priceUSD"]),
+            "volume_1h": float(pair_data["volume"]["h1"]),
+            "volume_24h": float(pair_data["volume"]["h24"]),
         }
 
     @staticmethod
