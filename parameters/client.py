@@ -8,4 +8,3 @@ params_redis_client = redis.Redis(
     db=settings.redis.dl_db,
     username=settings.redis.dl_username,
 )
-
