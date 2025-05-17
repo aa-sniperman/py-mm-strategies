@@ -95,7 +95,7 @@ class VolMakerV1(BaseVolMaker):
                 balances=[p["balance"] for p in paired[: self.params.max_wallets_num]],
             )
         except Exception as e:
-            send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
+            send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
 
     def _pick_sender_and_recipient(self):
         min_trade_size = self.params.min_trade_size
@@ -110,7 +110,7 @@ class VolMakerV1(BaseVolMaker):
 
         if len(eligible_senders) == 0 or len(eligible_recipients) == 0:
             send_message(
-                f"🚨 {self.metadata["name"]}: There is no wallet with enough money to trade"
+                f"🚨 {self.metadata['name']}: There is no wallet with enough money to trade"
             )
             return None
 
@@ -173,7 +173,7 @@ class VolMakerV1(BaseVolMaker):
                     )
                     time.sleep(10)
                 except Exception as e:
-                    send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
+                    send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
             if sender_base_bal > 0.001:
                 try:
                     await ExecutorTokenHelper.transfer_token(
@@ -184,7 +184,7 @@ class VolMakerV1(BaseVolMaker):
                         fund_des,
                     )
                 except Exception as e:
-                    send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
+                    send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
             return
 
         is_buy: bool
@@ -224,7 +224,7 @@ class VolMakerV1(BaseVolMaker):
         while attempts < 3 and success is False:
             try:
                 print(
-                    f"Wallet {sender} {"buying" if is_buy else "selling"} with {trade_amount}, recipient: {recipient}"
+                    f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
                 )
 
                 res = await ExecutorSwap.execute_swap(
@@ -249,7 +249,7 @@ class VolMakerV1(BaseVolMaker):
 
                 success = True
             except Exception as e:
-                send_message(f"🚨 Error at {self.metadata["name"]}: {str(e)}")
+                send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
                 attempts += 1
                 time.sleep(5)
 
@@ -261,7 +261,7 @@ class VolMakerV1(BaseVolMaker):
         target_vol_24h = self.params.target_vol_1h * 24
         if self.states.cur_24h_vol * 2 < target_vol_24h:
             send_message(
-                f"🚨 {self.metadata["name"]}: Low vol 24h. Expected: ${target_vol_24h}. Current: ${self.states.cur_24h_vol}"
+                f"🚨 {self.metadata['name']}: Low vol 24h. Expected: ${target_vol_24h}. Current: ${self.states.cur_24h_vol}"
             )
 
     async def run(self):
@@ -284,7 +284,7 @@ class VolMakerV1(BaseVolMaker):
                 wallets = self._pick_sender_and_recipient()
                 if wallets is not None:
                     print(
-                        f"Picked sender: {wallets["sender"]}. Picked recipient: {wallets["recipient"]}"
+                        f"Picked sender: {wallets['sender']}. Picked recipient: {wallets['recipient']}"
                     )
                     await self._make_trade(
                         wallets["sender"], wallets["recipient"], wallets["fund_destination"]
