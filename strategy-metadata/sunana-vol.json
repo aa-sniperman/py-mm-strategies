@@ -1,9 +1,0 @@
-{
-    "name": "Sunana Vol Maker",
-    "chain": "tron",
-    "type": "tron-vol",
-    "key": "sunana",
-    "protocol": "sunswap-v2",
-    "quote": "TRX",
-    "base": "SUNANA"
-}
