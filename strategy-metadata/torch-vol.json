@@ -1,0 +1,9 @@
+{
+    "name": "Torch Vol Maker",
+    "chain": "metis",
+    "type": "vol-v1",
+    "key": "torch",
+    "protocol": "hercules-v3",
+    "quote": "WMETIS",
+    "base": "TORCH"
+}

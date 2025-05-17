@@ -1,0 +1,9 @@
+{
+    "name": "Pumpe Vol Maker",
+    "chain": "metis",
+    "type": "vol-v1",
+    "key": "pumpe",
+    "protocol": "hercules-v2",
+    "quote": "WMETIS",
+    "base": "PUMPE"
+}

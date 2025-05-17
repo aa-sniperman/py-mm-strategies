@@ -1,0 +1,9 @@
+{
+    "name": "EQB Vol Maker",
+    "chain": "arbitrum",
+    "key": "eqb",
+    "type": "vol-v1",
+    "protocol": "camelot-v2",
+    "quote": "WETH_ARB",
+    "base": "EQB"
+}
