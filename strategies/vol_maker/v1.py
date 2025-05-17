@@ -144,12 +144,12 @@ class VolMakerV1(BaseVolMaker):
     async def _make_trade(self, sender, recipient, fund_des):
 
         sender_quote_bal = DataLayerAdapter.get_balance(
-            self.metadata["chain"], sender, self.base_token_config.address
+            self.metadata["chain"], sender, self.quote_token_config.address
         )
         sender_quote_value = sender_quote_bal * self.states.quote_price
 
         sender_base_bal = DataLayerAdapter.get_balance(
-            self.metadata["chain"], sender, self.quote_token_config.address
+            self.metadata["chain"], sender, self.base_token_config.address
         )
         sender_base_value = sender_base_bal * self.states.base_price
 
@@ -217,6 +217,7 @@ class VolMakerV1(BaseVolMaker):
 
         trade_amount = math.floor(1e9 * trade_amount) / 1e9
 
+
         attempts = 0
         success = False
 
@@ -235,7 +236,11 @@ class VolMakerV1(BaseVolMaker):
                         if is_buy
                         else self.base_token_config.address
                     ),
-                    token_out=self.base_token_config.address,
+                    token_out=(
+                        self.quote_token_config.address
+                        if not is_buy
+                        else self.base_token_config.address
+                    ),
                     amount_in=trade_amount,
                     recipient=recipient,
                 )
@@ -266,10 +271,10 @@ class VolMakerV1(BaseVolMaker):
 
             vol_ok = self._check_vol()
             print(f"Current vol: ${self.states.cur_1h_vol}. Target vol: ${self.params.target_vol_1h}")
-            # if vol_ok:
-            #     print("Done")
-            #     time.sleep(30)
-            #     continue
+            if vol_ok:
+                print("Done")
+                time.sleep(30)
+                continue
 
             number_of_trades = random.randint(2, 4)
 
