@@ -94,6 +94,7 @@ class VolMakerV1(BaseVolMaker):
                 cur_24h_vol=base_market_data["volume_24h"],
                 balances=[p["balance"] for p in paired[: self.params.max_wallets_num]],
             )
+
         except Exception as e:
             send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
 
@@ -207,7 +208,7 @@ class VolMakerV1(BaseVolMaker):
         max_trade = min(
             self.params.max_trade_size
             / (self.states.quote_price if is_buy else self.states.base_price),
-            balance,
+            balance - 0.0002,
         )
 
         percent = random.randint(0, 100)
