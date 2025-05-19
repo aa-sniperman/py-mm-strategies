@@ -16,3 +16,17 @@ params_redis_client = redis.Redis(
 def get_strategy_params(strategy_key: str):
     return params_redis_client.hgetall(strategy_key)
     
+def set_strategy_params(strategy_key: str, new_set: dict):
+    current_set = params_redis_client.hgetall(strategy_key)
+    
+    # Merge the current set with the new set
+    updated_set = {**current_set, **new_set}
+
+    # Redis expects a flat dict of strings
+    updated_set = {k: str(v) for k, v in updated_set.items()}
+
+    # Update Redis
+    if updated_set:
+        params_redis_client.hset(strategy_key, mapping=updated_set)
+    
+    return updated_set
