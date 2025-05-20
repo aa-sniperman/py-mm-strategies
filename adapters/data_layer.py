@@ -4,6 +4,7 @@ from typing import List, Dict, TypedDict
 import json
 
 class MarketDataInfo(TypedDict):
+    mc: float
     price: float
     volume_1h: float
     volume_24h: str
@@ -26,6 +27,7 @@ class DataLayerAdapter:
         key = f"pair:{chain}:dexscreener"
         pair_data = json.loads(dl_redis_client.hget(key, pair))
         return {
+            "mc": float(pair_data["marketCap"]),
             "price": float(pair_data["priceUsd"]),
             "volume_1h": float(pair_data["volume"]["h1"]),
             "volume_24h": float(pair_data["volume"]["h24"]),
