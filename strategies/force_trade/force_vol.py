@@ -37,7 +37,7 @@ async def force_trade_vol(
         await union.execute_swap(
             quote_config.address if params.is_buy else base_config.address,
             base_config.address if params.is_buy else quote_config.address,
-            params.protocol,
+            base_config.protocol,
             trade_vol,
             0, # to-do: calculate min amount out based on slippage
             None

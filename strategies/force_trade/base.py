@@ -4,7 +4,6 @@ from strategies.makers_union import MakersUnion
 from token_configs import TokenConfig
 
 class ForceTradeBaseParams(BaseModel):
-    protocol: str
     cluster_key: str
     token_key: str
     slippage: float
@@ -14,7 +13,7 @@ def get_makers_and_tokens(params: ForceTradeBaseParams):
     base_config = TokenConfig[params.token_key]
     quote_config = TokenConfig[base_config.quote]
 
-    union = MakersUnion(base_config.chain, params.protocol, makers=makers, tokens=[base_config.address, quote_config.address])
+    union = MakersUnion(base_config.chain, protocol=base_config.protocol, makers=makers, tokens=[base_config.address, quote_config.address])
     return {
         "union": union,
         "base": base_config,
