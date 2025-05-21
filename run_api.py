@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.routing import APIRouter
-from api_server.routes import strategies
+from api_server.routes import strategies, force_trade
 from api_server.api_key import get_api_key
 
 app = FastAPI(
@@ -24,6 +24,7 @@ app.add_middleware(
 
 router = APIRouter()
 router.include_router(strategies.router, dependencies=[Depends(get_api_key)])
+router.include_router(force_trade.router, dependencies=[Depends(get_api_key)])
 app.include_router(router, prefix="/api")
 
 @app.get("/")

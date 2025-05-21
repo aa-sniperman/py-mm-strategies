@@ -65,6 +65,6 @@ class DataLayerAdapter:
             result[account] = symbol_to_balance
 
         # Add total to result
-        result["total"] = {symbol: str(total[symbol]) for symbol in symbols}
+        result["total"] = {symbol: float(total[symbol]) for symbol in symbols}
 
         return result

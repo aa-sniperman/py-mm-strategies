@@ -24,19 +24,23 @@ async def force_trade_vol(
     union: MakersUnion = extracted["union"]
 
     avg_interval = params.duration / (params.num_of_trades - 1)
+    avg_vol = params.vol / params.num_of_trades
 
     time_gaps = random_array_with_sum(params.num_of_trades - 1, params.duration, avg_interval * 0.8, avg_interval * 1.2)
-    trade_vols = random_array_with_sum(params.num_of_trades, params.vol, params.vol * 0.5, params.vol * 1.5)
+    trade_vols = random_array_with_sum(params.num_of_trades, params.vol, avg_vol * 0.5, avg_vol * 1.5)
     
+    print(trade_vols, time_gaps)
     for i in range(0, params.num_of_trades):
         trade_vol = trade_vols[i]
 
+        print(f"Executing force trade by vol {i}, vol {trade_vol}...")
         await union.execute_swap(
             quote_config.address if params.is_buy else base_config.address,
             base_config.address if params.is_buy else quote_config.address,
             params.protocol,
             trade_vol,
-            0 # to-do: calculate min amount out based on slippage
+            0, # to-do: calculate min amount out based on slippage
+            None
         )
 
         if i < len(time_gaps):

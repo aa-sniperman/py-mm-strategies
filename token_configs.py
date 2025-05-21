@@ -18,7 +18,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         address="0xBfbCFe8873fE28Dfa25f1099282b088D52bbAD9C",
         pair="0x69B545997BD6aBC81CaE39Fe9bdC94d2242a0f92",
         symbol="EQB",
-        quote="WETH_EQB"
+        quote="WETH_ARB"
     ),
     "HOLD_SYNCSWAP": TokenConfigInfo(
         chain="zksync",

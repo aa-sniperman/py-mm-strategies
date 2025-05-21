@@ -45,6 +45,7 @@ class MakersUnion(BaseModel):
         recipient: Optional[str],
     ):
         try:
+            print(f"Maker {maker} trading {amount_in} {token_in} for {token_out}...")
             res = await ExecutorSwap.execute_swap(
                 chain=self.chain,
                 account=maker,
@@ -83,6 +84,9 @@ class MakersUnion(BaseModel):
 
                 max_takeable = available[maker] * random.randint(5, 55) / 100
 
+                if max_takeable < 1e-9:
+                    continue
+
                 allocation = min(remaining_amount, max_takeable)
 
                 if allocation > 0:
@@ -101,11 +105,20 @@ class MakersUnion(BaseModel):
         min_amount_out: float,
         recipient: Optional[str],
     ):
+        self.sync_balances()
         allocations = self.calculate_inputs_for_swaps(token_in, amount_in)
 
         await asyncio.gather(
-            self._execute_swap_for_a_maker(
-                maker, token_in, token_out, protocol, amount, min_amount_out, recipient
+            *(
+                self._execute_swap_for_a_maker(
+                    maker,
+                    token_in,
+                    token_out,
+                    protocol,
+                    amount,
+                    min_amount_out,
+                    recipient,
+                )
+                for (maker, amount) in allocations.items()
             )
-            for (maker, amount) in allocations.items()
         )

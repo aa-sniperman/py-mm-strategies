@@ -11,7 +11,7 @@ class ForceTradeBaseParams(BaseModel):
 
 def get_makers_and_tokens(params: ForceTradeBaseParams):
     makers = load_makers(params.cluster_key)
-    base_config = TokenConfig[params.cluster_key]
+    base_config = TokenConfig[params.token_key]
     quote_config = TokenConfig[base_config.quote]
 
     union = MakersUnion(base_config.chain, params.protocol, makers=makers, tokens=[base_config.address, quote_config.address])
