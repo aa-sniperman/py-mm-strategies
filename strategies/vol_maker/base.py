@@ -1,5 +1,4 @@
 from abc import abstractmethod
-from strategy_metadata.type import VolMakerMetadata
 from typing import TypedDict
 from pydantic import BaseModel
 from strategies.base import BaseStrategy
@@ -16,18 +15,6 @@ class SenderRecipientInfo(TypedDict):
     fund_destination: str
 
 class BaseVolMaker(BaseStrategy):
-
-    def __init__(self, metadata: VolMakerMetadata):
-        self.metadata = metadata
-
-    @abstractmethod
-    def _update_params(self) -> None:
-        pass
-
-    @abstractmethod
-    def _update_states(self) -> None:
-        pass
-
     @abstractmethod
     def _check_vol(self) -> bool:
         pass

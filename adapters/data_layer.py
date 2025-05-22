@@ -1,13 +1,34 @@
 import redis
+import clickhouse_connect
 from settings import settings
 from typing import List, Dict, TypedDict
 import json
+
 
 class MarketDataInfo(TypedDict):
     mc: float
     price: float
     volume_1h: float
     volume_24h: str
+
+
+class OHLCV(TypedDict):
+    ts: int
+    o: float
+    h: float
+    l: float
+    c: float
+    v: float
+
+
+def get_dl_ch_client():
+    return clickhouse_connect.get_client(
+        host=settings.clickhouse.host,
+        username=settings.clickhouse.username,
+        port=settings.clickhouse.port,
+        password=settings.clickhouse.password,
+        database=settings.clickhouse.database,
+    )
 
 
 dl_redis_client = redis.Redis(
@@ -18,7 +39,6 @@ dl_redis_client = redis.Redis(
     db=settings.redis.dl_db,
     username=settings.redis.dl_username,
 )
-
 
 
 class DataLayerAdapter:
@@ -41,10 +61,7 @@ class DataLayerAdapter:
 
     @staticmethod
     def get_balances(
-        chain: str,
-        accounts: List[str],
-        tokens: List[str],
-        symbols: List[str]
+        chain: str, accounts: List[str], tokens: List[str], symbols: List[str]
     ) -> Dict[str, Dict[str, float]]:
         result: Dict[str, Dict[str, float]] = {}
         total: Dict[str, float] = {symbol: 0 for symbol in symbols}
@@ -68,3 +85,29 @@ class DataLayerAdapter:
         result["total"] = {symbol: float(total[symbol]) for symbol in symbols}
 
         return result
+
+    @staticmethod
+    def get_ohlcvs(pair: str, interval: str, from_ts: int, to_ts: int):
+        query = """
+        SELECT ts, o, h, l, c, v
+        from %(db)s
+        WHERE pair = %(pair)s
+        and ts BETWEEN %(from_ts)s and %(to_ts)s
+        order by ts desc 
+        """
+
+        results = get_dl_ch_client().query(
+            query=query,
+            parameters={
+                "db": "ohlcv_15m" if interval == "15m" else "ohlcv_1h",
+                "pair": pair,
+                "from_ts": from_ts,
+                "to_ts": to_ts,
+            },
+        )
+
+        rows = results.result_rows
+
+        columns = ["ts", "o", "h", "l", "c", "v"]
+
+        return [OHLCV(dict(zip(columns, row))) for row in rows]

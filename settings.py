@@ -7,6 +7,15 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).resolve().parents[0]
 dotenv_path = PROJECT_ROOT / ".env"
 
+class ClickhouseConfig(BaseSettings):
+    host: str = Field(default="localhost", validation_alias="DL_CLICKHOUSE_HOST")
+    username: str = Field(..., validation_alias="DL_CLICKHOUSE_USERNAME")
+    password: str = Field(..., validation_alias="DL_CLICKHOUSE_PASSWORD")
+    database: str = Field(..., validation_alias="DL_CLICKHOUSE_DB")
+    port: int = Field(default=8123, validate_alias="DL_CLICKHOUSE_PORT")
+
+    model_config = SettingsConfigDict(env_file=dotenv_path, extra="allow")
+
 class ApiConfig(BaseSettings):
     api_key: str = Field(..., validation_alias="API_KEY")
 
@@ -40,6 +49,7 @@ class KeysConfig(BaseSettings):
     model_config = SettingsConfigDict(env_file=dotenv_path, extra="allow")
 
 class Settings(BaseSettings):
+    clickhouse: ClickhouseConfig = Field(default_factory=ClickhouseConfig)
     redis: RedisConfig = Field(default_factory=RedisConfig)
     keys: KeysConfig = Field(default_factory=KeysConfig)
     executor: ExecutorConfig = Field(default_factory=ExecutorConfig)

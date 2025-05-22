@@ -13,6 +13,12 @@ class VolMakerMetadata(StrategyMetadata):
     quote: str
     base: str
 
+class RSIRangeMMMetadata(StrategyMetadata):
+    chain: str
+    protocol: str
+    quote: str
+    base: str
+
 # Get the project root dynamically
 PROJECT_ROOT = Path(__file__).resolve().parents[0]
 def load_strategy_metadata(file_name: str):
