@@ -28,6 +28,7 @@ class TWAPTPSLMM(BaseTPSLMM):
         self.params = TWAPTPSLParams(
             tp_price=raw["tpPrice"],
             sl_price=raw["slPrice"],
+            sell_on_low=raw["sellOnLow"],
             rolling_window=raw["rollingWindow"],
             avg_refresh_time=raw["avgRefreshTime"],
             min_trade_size=float(raw["minSize"]),
@@ -79,7 +80,10 @@ class TWAPTPSLMM(BaseTPSLMM):
                 send_message(f"🚨 {self.metadata['name']}: TWAP surged above TP price. Tping...")
                 await self._sell()
             elif twap < self.params.sl_price:
-                send_message(f"🚨 {self.metadata['name']}: TWAP dropped below SL price. SLing...")
-                await self._sell()    
+                send_message(f"🚨 {self.metadata['name']}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}...")
+                if self.params.sell_on_low:
+                    await self._sell()    
+                else:
+                    await self._buy()
 
             time.sleep(5)

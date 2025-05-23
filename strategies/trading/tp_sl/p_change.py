@@ -27,6 +27,7 @@ class PChangeTPSLMM(BaseTPSLMM):
         self.params = PChangeTPSLParams(
             tp_percent=raw["tpPercent"],
             sl_percent=raw["slPercent"],
+            sell_on_low=raw["sellOnLow"],
             avg_refresh_time=raw["avgRefreshTime"],
             min_trade_size=float(raw["minSize"]),
             max_trade_size=float(raw["maxSize"]),
@@ -65,10 +66,13 @@ class PChangeTPSLMM(BaseTPSLMM):
             self._update_states()
 
             if self.states.p_change > self.params.tp_percent:
-                send_message(f"🚨 {self.metadata['name']}: Price change surged above TP percent. Tping...")
+                send_message(f"🚨 {self.metadata['name']}: Price change surged above upper bound. Tping...")
                 await self._sell()
             elif self.states.p_change < self.params.sl_percent:
-                send_message(f"🚨 {self.metadata['name']}: Price change dropped below SL percent. SLing...")
-                await self._sell()    
+                send_message(f"🚨 {self.metadata['name']}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}...")
+                if self.params.sell_on_low:
+                    await self._sell()    
+                else:
+                    await self._buy()
 
             time.sleep(5)

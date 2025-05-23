@@ -31,6 +31,7 @@ class CapTPSLMM(BaseTPSLMM):
             soft_TP_cap=raw["softTPCap"],
             hard_SL_cap=raw["hardSLCap"],
             soft_SL_cap=raw["softSLCap"],
+            sell_on_low=raw["sellOnLow"],
             avg_refresh_time=raw["avgRefreshTime"],
             min_trade_size=float(raw["minSize"]),
             max_trade_size=float(raw["maxSize"]),
@@ -54,6 +55,28 @@ class CapTPSLMM(BaseTPSLMM):
 
         except Exception as e:
             send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+
+    async def _buy_soft(self):
+        min_size = 0.5 * self.params.min_trade_size / self.states.quote_price
+
+        max_size = 0.5 * self.params.max_trade_size / self.states.quote_price
+
+        if max_size <= min_size:
+            return
+
+        trade_size = random.uniform(min_size, max_size)
+
+        if trade_size > 1e-4:
+            await self.union.execute_swap(
+                self.quote_token_config.address,
+                self.base_token_config.address,
+                self.metadata.protocol,
+                math.floor(trade_size * 1e9) / 1e9,
+                0,  # todo: add slippage
+                None,
+            )
+
+        time.sleep(self.params.avg_refresh_time)
 
     async def _sell_soft(self):
         min_size = 0.5 * self.params.min_trade_size / self.states.base_price
@@ -88,8 +111,14 @@ class CapTPSLMM(BaseTPSLMM):
             elif cap > self.params.soft_TP_cap:
                 await self._sell_soft()
             elif cap < self.params.hard_SL_cap:
-                await self._sell()
-            elif cap > self.params.soft_SL_cap:
-                await self._sell_soft()
+                if self.params.sell_on_low:
+                    await self._sell()
+                else:
+                    await self._buy()
+            elif cap < self.params.soft_SL_cap:
+                if self.params.sell_on_low:
+                    await self._sell_soft()
+                else:
+                    await self._buy_soft()
 
             time.sleep(5)
