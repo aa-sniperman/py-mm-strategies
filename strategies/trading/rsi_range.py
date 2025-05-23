@@ -15,7 +15,7 @@ import random
 
 
 class RSIRangeConfig(BaseModel):
-    rsi_interval: str  # 15m or 1h
+    candle_interval: str  # 15m or 1h
     rsi_window: int
     upper_rsi: float
     lower_rsi: float
@@ -70,7 +70,7 @@ class RSIRangeMM(BaseStrategy):
 
         self.params = RSIRangeConfig(
             rsi_window=raw["rsiWindow"],
-            rsi_interval=raw["rsiInterval"],
+            candle_interval=raw["rsiInterval"],
             upper_rsi=raw["upperRSI"],
             lower_rsi=raw["lowerRSI"],
             max_base_loss=raw["maxBaseLoss"],
@@ -112,7 +112,7 @@ class RSIRangeMM(BaseStrategy):
                     ]
 
             ohlcvs = DataLayerAdapter.get_ohlcvs(
-                self.base_token_config.pair, self.params.rsi_interval, now - 21600, now
+                self.base_token_config.pair, self.params.candle_interval, now - 21600, now
             )
             self.states.rsi = cal_rsi(
                 ohlcvs=ohlcvs, num_of_periods=self.params.rsi_window
@@ -213,7 +213,7 @@ class RSIRangeMM(BaseStrategy):
 
             now = int(time.time())
 
-            max_lag = 16 * 60 if self.params.rsi_interval == "15m" else 61 * 60
+            max_lag = 16 * 60 if self.params.candle_interval == "15m" else 61 * 60
             if ts + max_lag < now:
                 print(f"{self.metadata['name']}: RSI data lagging")
                 continue
