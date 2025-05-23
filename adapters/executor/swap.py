@@ -1,6 +1,7 @@
 from typing import Optional
 from adapters.executor.client import client
 
+
 class ExecutorSwap:
     @staticmethod
     async def execute_swap(
@@ -11,8 +12,8 @@ class ExecutorSwap:
         token_out: str,
         amount_in: float,
         min_amount_out: Optional[float] = None,
-        recipient: Optional[str] = None
-    ): 
+        recipient: Optional[str] = None,
+    ):
         body = {
             "chain": chain,
             "account": account,
@@ -21,10 +22,10 @@ class ExecutorSwap:
             "recipient": recipient if recipient else account,
             "protocol": protocol,
             "amountIn": str(amount_in),
-            "amountOutMin": str(min_amount_out) if min_amount_out else "0"
+            "amountOutMin": str(min_amount_out) if min_amount_out else "0",
         }
 
         print(body)
 
-        response = await client.post('/order/swap', data=body)
+        response = await client.post("/order/swap", data=body)
         return response.json()

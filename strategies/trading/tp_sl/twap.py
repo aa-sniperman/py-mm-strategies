@@ -13,6 +13,7 @@ class TWAPTPSLParams(TPSLBaseParams):
     tp_price: float
     sl_price: float
 
+
 class TWAPTPSLStates(TPSLBaseStates):
     _: int = 0
 
@@ -20,7 +21,6 @@ class TWAPTPSLStates(TPSLBaseStates):
 class TWAPTPSLMM(BaseTPSLMM):
     def __init__(self, metadata: SinglePairMMMetadata):
         super().__init__(metadata)
-
 
     def _update_params(self):
         raw = get_strategy_params(self.metadata["key"])
@@ -43,7 +43,7 @@ class TWAPTPSLMM(BaseTPSLMM):
             )
             quote_market_data = DataLayerAdapter.get_market_data(
                 self.metadata["chain"], self.quote_token_config.pair
-            )   
+            )
 
             self.states = TWAPTPSLStates(
                 base_price=base_market_data["price"],
@@ -60,7 +60,12 @@ class TWAPTPSLMM(BaseTPSLMM):
 
             now = int(time.time())
 
-            ohlcvs = DataLayerAdapter.get_ohlcvs(self.base_token_config.pair, self.params.candle_interval, now - 24 * 3600, now)
+            ohlcvs = DataLayerAdapter.get_ohlcvs(
+                self.base_token_config.pair,
+                self.params.candle_interval,
+                now - 24 * 3600,
+                now,
+            )
 
             df = cal_rolling_twap(ohlcvs, self.params.rolling_window)
 
@@ -77,12 +82,16 @@ class TWAPTPSLMM(BaseTPSLMM):
                 continue
 
             if twap > self.params.tp_price:
-                send_message(f"🚨 {self.metadata['name']}: TWAP surged above TP price. Tping...")
+                send_message(
+                    f"🚨 {self.metadata['name']}: TWAP surged above TP price. Tping..."
+                )
                 await self._sell()
             elif twap < self.params.sl_price:
-                send_message(f"🚨 {self.metadata['name']}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}...")
+                send_message(
+                    f"🚨 {self.metadata['name']}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}..."
+                )
                 if self.params.sell_on_low:
-                    await self._sell()    
+                    await self._sell()
                 else:
                     await self._buy()
 

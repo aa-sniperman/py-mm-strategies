@@ -5,38 +5,38 @@ from adapters.executor.client import client
 class ExecutorTokenHelper:
     @staticmethod
     async def unwrap(chain: str, account: str, amount: float):
-        body = {
-            "chain": chain,
-            "account": account,
-            "amount": str(amount)
-        }
-        response = await client.post('/order/unwrap', data=body)
+        body = {"chain": chain, "account": account, "amount": str(amount)}
+        response = await client.post("/order/unwrap", data=body)
         return response.json()
 
     @staticmethod
     async def wrap(chain: str, account: str, amount: float):
-        body = {
-            "chain": chain,
-            "account": account,
-            "amount": str(amount)
-        }
-        response = await client.post('/order/wrap', data=body)
+        body = {"chain": chain, "account": account, "amount": str(amount)}
+        response = await client.post("/order/wrap", data=body)
         return response.json()
 
     @staticmethod
-    async def transfer_token(chain: str, account: str, token: str, amount: float, recipient: str):
+    async def transfer_token(
+        chain: str, account: str, token: str, amount: float, recipient: str
+    ):
         body = {
             "chain": chain,
             "account": account,
             "token": token,
             "recipient": recipient,
-            "amount": str(amount)
+            "amount": str(amount),
         }
-        response = await client.post('/order/transfer', data=body)
+        response = await client.post("/order/transfer", data=body)
         return response.json()
 
     @staticmethod
-    async def batch_transfer_token(chain: str, account: str, token: str, amounts: List[float], recipients: List[str]):
+    async def batch_transfer_token(
+        chain: str,
+        account: str,
+        token: str,
+        amounts: List[float],
+        recipients: List[str],
+    ):
         filter_amounts = []
         filter_recipients = []
 
@@ -52,11 +52,9 @@ class ExecutorTokenHelper:
             "chain": chain,
             "account": account,
             "token": token,
-            "recipients": {
-                "accounts": filter_recipients
-            },
-            "amounts": filter_amounts
+            "recipients": {"accounts": filter_recipients},
+            "amounts": filter_amounts,
         }
 
-        response = await client.post('/order/batch-transfer', data=body)
+        response = await client.post("/order/batch-transfer", data=body)
         return response.json()

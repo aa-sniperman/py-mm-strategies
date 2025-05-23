@@ -10,6 +10,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.post("/by_vol", response_model=bool)
 async def execute_force_trade_by_vol(params: ForceTradeVolParams):
     """
@@ -17,6 +18,7 @@ async def execute_force_trade_by_vol(params: ForceTradeVolParams):
     """
     asyncio.create_task(force_trade_vol(params))
     return True
+
 
 @router.post("/by_mc", response_model=bool)
 async def execute_force_trade_by_mc(params: ForceTradeMCParams):

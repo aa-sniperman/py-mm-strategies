@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from strategy_metadata.type import StrategyMetadata
 
+
 class BaseStrategy(ABC):
     def __init__(self, metadata: StrategyMetadata):
         self.metadata = metadata

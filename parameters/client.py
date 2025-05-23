@@ -9,16 +9,18 @@ params_redis_client = redis.Redis(
     decode_responses=True,
     db=settings.redis.dl_db,
     username=settings.redis.dl_username,
-    socket_timeout=5,         # seconds
-    socket_connect_timeout=5  # connection timeout
+    socket_timeout=5,  # seconds
+    socket_connect_timeout=5,  # connection timeout
 )
+
 
 def get_strategy_params(strategy_key: str):
     return params_redis_client.hgetall(strategy_key)
-    
+
+
 def set_strategy_params(strategy_key: str, new_set: dict):
     current_set = params_redis_client.hgetall(strategy_key)
-    
+
     # Merge the current set with the new set
     updated_set = {**current_set, **new_set}
 
@@ -28,5 +30,5 @@ def set_strategy_params(strategy_key: str, new_set: dict):
     # Update Redis
     if updated_set:
         params_redis_client.hset(strategy_key, mapping=updated_set)
-    
+
     return updated_set

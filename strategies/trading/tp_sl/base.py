@@ -10,7 +10,7 @@ import random
 
 
 class TPSLBaseParams(BaseModel):
-    sell_on_low: bool # determine stop loss or buy dip
+    sell_on_low: bool  # determine stop loss or buy dip
     avg_refresh_time: float
     min_trade_size: float
     max_trade_size: float
@@ -38,16 +38,10 @@ class BaseTPSLMM(BaseStrategy):
         )
 
         self.params = TPSLBaseParams(
-            avg_refresh_time=0,
-            min_trade_size=0,
-            max_trade_size=0,
-            slippage=0
+            avg_refresh_time=0, min_trade_size=0, max_trade_size=0, slippage=0
         )
 
-        self.states = TPSLBaseStates(
-            quote_price=0,
-            base_price=0
-        )
+        self.states = TPSLBaseStates(quote_price=0, base_price=0)
 
     async def _buy(self):
         min_size = self.params.min_trade_size / self.states.quote_price

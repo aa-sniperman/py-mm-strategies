@@ -27,6 +27,7 @@ router.include_router(strategies.router, dependencies=[Depends(get_api_key)])
 router.include_router(force_trade.router, dependencies=[Depends(get_api_key)])
 app.include_router(router, prefix="/api")
 
+
 @app.get("/")
 def root():
     return {"message": "Welcome to MM Manager API"}

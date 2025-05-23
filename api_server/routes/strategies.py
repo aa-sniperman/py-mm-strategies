@@ -18,6 +18,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
+
 @router.post("/{key}", response_model=dict)
 def edit_strategy_parameters(key: str, new_set: dict):
     """
@@ -30,10 +31,12 @@ def edit_strategy_parameters(key: str, new_set: dict):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 class StrategyStatus(BaseModel):
     name: str
     status: str
     metadata: dict
+
 
 def get_status(name: str) -> str:
     try:
@@ -50,6 +53,7 @@ def get_status(name: str) -> str:
             return "unknown"
     except Exception:
         return "error"
+
 
 @router.get("", response_model=List[StrategyStatus])
 def get_all_strategies():
@@ -76,17 +80,16 @@ def get_all_strategies():
 
                 status = future.result()
 
-                strategies.append({
-                    "name": name,
-                    "status": status,
-                    "metadata": metadata
-                })
+                strategies.append(
+                    {"name": name, "status": status, "metadata": metadata}
+                )
 
         return strategies
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-    
+
+
 @router.get("/{key}", response_model=dict)
 def get_strategy_parameters(key: str):
     """

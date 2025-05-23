@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Dict
 
-NATIVE = '0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee'
+NATIVE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 
 
 class TokenConfigInfo(BaseModel):
@@ -20,7 +20,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x69B545997BD6aBC81CaE39Fe9bdC94d2242a0f92",
         symbol="EQB",
         quote="WETH_ARB",
-        protocol="camelot-v2"
+        protocol="camelot-v2",
     ),
     "HOLD_SYNCSWAP": TokenConfigInfo(
         chain="zksync",
@@ -28,7 +28,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x9bec30fd825f5e8e9bc6a84914b8a3ab31742103",
         symbol="HOLD",
         quote="",
-        protocol="syncswap"
+        protocol="syncswap",
     ),
     "HOLD": TokenConfigInfo(
         chain="berachain",
@@ -36,7 +36,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0xAD28e28d64Fb46c785246d0468dEc1c89C1774bA",
         symbol="HOLD",
         quote="",
-        protocol="holdso"
+        protocol="holdso",
     ),
     "HOLD_KODIAK": TokenConfigInfo(
         chain="berachain",
@@ -44,7 +44,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0xdcA120bd3A13250B67f6FAA5c29c1F38eC6EBeCE",
         symbol="HOLD",
         quote="",
-        protocol="kodiak-v2"
+        protocol="kodiak-v2",
     ),
     "MEDAL": TokenConfigInfo(
         chain="ancient8",
@@ -52,7 +52,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x1888bbbb58e2b89e0be01fe50d9b4883ee419793",
         symbol="MEDAL",
         quote="",
-        protocol="dojo-v2"
+        protocol="dojo-v2",
     ),
     "A8": TokenConfigInfo(
         chain="ancient8",
@@ -60,7 +60,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0xd907efdb8d52edd6917263f24db230b525a3ef0b",
         symbol="A8",
         quote="",
-        protocol="dojo-v2"
+        protocol="dojo-v2",
     ),
     "PUMPE": TokenConfigInfo(
         chain="metis",
@@ -68,7 +68,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x8d57Aa133B98cf9F13bF7CDaE269fC4d29ADcC55",
         symbol="PUMPE",
         quote="",
-        protocol="hercules-v2"
+        protocol="hercules-v2",
     ),
     "SUNANA": TokenConfigInfo(
         chain="tron",
@@ -76,7 +76,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="TJ9g2SzMSH7yV71AtpEjLa4HQyRkSGYHW4",
         symbol="SUNANA",
         quote="",
-        protocol="sunswap-v2"
+        protocol="sunswap-v2",
     ),
     "TORCH": TokenConfigInfo(
         chain="metis",
@@ -84,7 +84,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x6eeAC91f1Bd77e1aD9a25C12c6A9577b4c185D94",
         symbol="TORCH",
         quote="",
-        protocol="hercules-v3"
+        protocol="hercules-v3",
     ),
     "WETH_ARB": TokenConfigInfo(
         chain="arbitrum",
@@ -92,6 +92,6 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x389938CF14Be379217570D8e4619E51fBDafaa21",
         symbol="WETH",
         quote="",
-        protocol=""
-    )
+        protocol="",
+    ),
 }

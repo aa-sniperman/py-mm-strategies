@@ -218,7 +218,6 @@ class VolMakerV1(BaseVolMaker):
 
         trade_amount = math.floor(1e9 * trade_amount) / 1e9
 
-
         attempts = 0
         success = False
 
@@ -271,7 +270,9 @@ class VolMakerV1(BaseVolMaker):
             self._update_states()
 
             vol_ok = self._check_vol()
-            print(f"Current vol: ${self.states.cur_1h_vol}. Target vol: ${self.params.target_vol_1h}")
+            print(
+                f"Current vol: ${self.states.cur_1h_vol}. Target vol: ${self.params.target_vol_1h}"
+            )
             if vol_ok:
                 print("Done")
                 time.sleep(30)
@@ -288,7 +289,9 @@ class VolMakerV1(BaseVolMaker):
                         f"Picked sender: {wallets['sender']}. Picked recipient: {wallets['recipient']}"
                     )
                     await self._make_trade(
-                        wallets["sender"], wallets["recipient"], wallets["fund_destination"]
+                        wallets["sender"],
+                        wallets["recipient"],
+                        wallets["fund_destination"],
                     )
 
             time.sleep(5)
