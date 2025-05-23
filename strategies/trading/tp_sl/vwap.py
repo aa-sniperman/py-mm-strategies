@@ -1,6 +1,6 @@
 from strategies.trading.tp_sl.base import TPSLBaseParams, TPSLBaseStates, BaseTPSLMM
 from parameters.client import get_strategy_params
-from strategy_metadata.type import BaseTPSLMMMetadata
+from strategy_metadata.type import SinglePairMMMetadata
 from adapters.data_layer import DataLayerAdapter
 from utils.chart import cal_rolling_vwap
 from bot import send_message
@@ -18,7 +18,7 @@ class VWAPTPSLStates(TPSLBaseStates):
 
 
 class VWAPTPSLMM(BaseTPSLMM):
-    def __init__(self, metadata: BaseTPSLMMMetadata):
+    def __init__(self, metadata: SinglePairMMMetadata):
         super().__init__(metadata)
 
 

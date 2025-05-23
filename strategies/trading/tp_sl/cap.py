@@ -1,6 +1,6 @@
 from strategies.trading.tp_sl.base import TPSLBaseParams, TPSLBaseStates, BaseTPSLMM
 from parameters.client import get_strategy_params
-from strategy_metadata.type import BaseTPSLMMMetadata
+from strategy_metadata.type import SinglePairMMMetadata
 from adapters.data_layer import DataLayerAdapter
 from bot import send_message
 import math
@@ -20,7 +20,7 @@ class CapTPSLStates(TPSLBaseStates):
 
 
 class CapTPSLMM(BaseTPSLMM):
-    def __init__(self, metadata: BaseTPSLMMMetadata):
+    def __init__(self, metadata: SinglePairMMMetadata):
         super().__init__(metadata)
 
     def _update_params(self):

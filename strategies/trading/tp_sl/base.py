@@ -2,7 +2,7 @@ from strategies.base import BaseStrategy
 from strategies.makers_union import MakersUnion
 from makers.loader import load_makers
 from pydantic import BaseModel
-from strategy_metadata.type import BaseTPSLMMMetadata
+from strategy_metadata.type import SinglePairMMMetadata
 from token_configs import TokenConfig
 import math
 import time
@@ -22,7 +22,7 @@ class TPSLBaseStates(BaseModel):
 
 
 class BaseTPSLMM(BaseStrategy):
-    def __init__(self, metadata: BaseTPSLMMMetadata):
+    def __init__(self, metadata: SinglePairMMMetadata):
         super().__init__(metadata)
         makers = load_makers(metadata["key"])
 
