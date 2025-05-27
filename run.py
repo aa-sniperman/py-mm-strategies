@@ -2,6 +2,7 @@ import sys
 from strategy_metadata.type import load_strategy_metadata
 from strategies.base import BaseStrategy
 from strategies.vol_maker.v1 import VolMakerV1
+from strategies.vol_maker.sol_bundle import VolMakerSolBundle
 import asyncio
 
 
@@ -11,6 +12,8 @@ async def main(metadata_filename: str):
     if metadata is not None:
         if metadata["type"] == "vol-v1":
             runner = VolMakerV1(metadata)
+        if metadata["type"] == "vol-sol-bundle":
+            runner = VolMakerSolBundle(metadata)
 
     if runner is not None:
         await runner.run()
