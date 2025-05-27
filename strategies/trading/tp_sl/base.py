@@ -23,12 +23,12 @@ class TPSLBaseStates(BaseModel):
 
 
 class BaseTPSLMM(BaseStrategy):
-    def __init__(self, metadata: SinglePairMMMetadata):
+    def __init__(self, metadata: SinglePairMMMetadata, maker_key: str):
         super().__init__(metadata)
-        makers = load_makers(metadata["key"])
+        makers = load_makers(maker_key)
 
-        self.base_token_config = TokenConfig[metadata["base"]]
-        self.quote_token_config = TokenConfig[metadata["quote"]]
+        self.base_token_config = TokenConfig[metadata.base]
+        self.quote_token_config = TokenConfig[metadata.quote]
 
         self.union = MakersUnion(
             metadata.chain,

@@ -20,11 +20,11 @@ class CapTPSLStates(TPSLBaseStates):
 
 
 class CapTPSLMM(BaseTPSLMM):
-    def __init__(self, metadata: SinglePairMMMetadata):
-        super().__init__(metadata)
+    def __init__(self, metadata: SinglePairMMMetadata, maker_key: str):
+        super().__init__(metadata, maker_key)
 
     def _update_params(self):
-        raw = get_strategy_params(self.metadata["key"])
+        raw = get_strategy_params(self.metadata.key)
 
         self.params = CapTPSLParams(
             hard_TP_cap=raw["hardTPCap"],
@@ -41,10 +41,10 @@ class CapTPSLMM(BaseTPSLMM):
     def _update_states(self):
         try:
             base_market_data = DataLayerAdapter.get_market_data(
-                self.metadata["chain"], self.base_token_config.pair
+                self.metadata.chain, self.base_token_config.pair
             )
             quote_market_data = DataLayerAdapter.get_market_data(
-                self.metadata["chain"], self.quote_token_config.pair
+                self.metadata.chain, self.quote_token_config.pair
             )
 
             self.states = CapTPSLStates(
@@ -54,7 +54,7 @@ class CapTPSLMM(BaseTPSLMM):
             )
 
         except Exception as e:
-            send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+            send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
 
     async def _buy_soft(self):
         min_size = 0.5 * self.params.min_trade_size / self.states.quote_price

@@ -18,11 +18,11 @@ class PChangeTPSLStates(TPSLBaseStates):
 
 
 class PChangeTPSLMM(BaseTPSLMM):
-    def __init__(self, metadata: SinglePairMMMetadata):
-        super().__init__(metadata)
+    def __init__(self, metadata: SinglePairMMMetadata, maker_key: str):
+        super().__init__(metadata, maker_key)
 
     def _update_params(self):
-        raw = get_strategy_params(self.metadata["key"])
+        raw = get_strategy_params(self.metadata.key)
 
         self.params = PChangeTPSLParams(
             tp_percent=raw["tpPercent"],
@@ -37,11 +37,11 @@ class PChangeTPSLMM(BaseTPSLMM):
     def _update_states(self):
         try:
             base_market_data = DataLayerAdapter.get_market_data(
-                self.metadata["chain"], self.base_token_config.pair
+                self.metadata.chain, self.base_token_config.pair
             )
             quote_market_data = DataLayerAdapter.get_market_data(
-                self.metadata["chain"], self.quote_token_config.pair
-            )
+                self.metadata.chain, self.quote_token_config.pair
+            )   
 
             now = int(time.time())
 
@@ -63,7 +63,7 @@ class PChangeTPSLMM(BaseTPSLMM):
             )
 
         except Exception as e:
-            send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+            send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
 
     async def run(self):
         while True:
@@ -71,14 +71,10 @@ class PChangeTPSLMM(BaseTPSLMM):
             self._update_states()
 
             if self.states.p_change > self.params.tp_percent:
-                send_message(
-                    f"🚨 {self.metadata['name']}: Price change surged above upper bound. Tping..."
-                )
+                send_message(f"🚨 {self.metadata.name}: Price change surged above upper bound. Tping...")
                 await self._sell()
             elif self.states.p_change < self.params.sl_percent:
-                send_message(
-                    f"🚨 {self.metadata['name']}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}..."
-                )
+                send_message(f"🚨 {self.metadata.name}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}...")
                 if self.params.sell_on_low:
                     await self._sell()
                 else:

@@ -2,6 +2,7 @@ from strategies.base import BaseStrategy
 from strategies.makers_union import MakersUnion
 from makers.loader import load_makers
 from pydantic import BaseModel
+from pydantic.dataclasses import dataclass
 from strategy_metadata.type import SinglePairMMMetadata
 from token_configs import TokenConfig
 from adapters.data_layer import DataLayerAdapter
@@ -20,8 +21,8 @@ class LossControlBaseConfig(BaseModel):
     max_trade_size: float
     slippage: float
 
-
-class LossControlBaseStates(BaseModel):
+@dataclass
+class LossControlBaseStates:
     quote_price: float
     base_price: float
     base_snapshot: float
@@ -32,12 +33,12 @@ class LossControlBaseStates(BaseModel):
 
 
 class LossControlBaseMM(BaseStrategy):
-    def __init__(self, metadata: SinglePairMMMetadata):
+    def __init__(self, metadata: SinglePairMMMetadata, maker_key: str):
         super().__init__(metadata)
-        makers = load_makers(metadata["key"])
+        makers = load_makers(maker_key)
 
-        self.base_token_config = TokenConfig[metadata["base"]]
-        self.quote_token_config = TokenConfig[metadata["quote"]]
+        self.base_token_config = TokenConfig[metadata.base]
+        self.quote_token_config = TokenConfig[metadata.quote]
 
         self.union = MakersUnion(
             metadata.chain,
@@ -61,6 +62,8 @@ class LossControlBaseMM(BaseStrategy):
             base_snapshot_1h=0,
             quote_snapshot_1h=0,
             checkpoint=0,
+            quote_price=0,
+            base_price=0
         )
 
     def _update_states(self):
@@ -90,10 +93,10 @@ class LossControlBaseMM(BaseStrategy):
                     self.quote_token_config.address
                 ]
         base_market_data = DataLayerAdapter.get_market_data(
-            self.metadata["chain"], self.base_token_config.pair
+            self.metadata.chain, self.base_token_config.pair
         )
         quote_market_data = DataLayerAdapter.get_market_data(
-            self.metadata["chain"], self.quote_token_config.pair
+            self.metadata.chain, self.quote_token_config.pair
         )
 
         self.states.base_price = base_market_data["price"]

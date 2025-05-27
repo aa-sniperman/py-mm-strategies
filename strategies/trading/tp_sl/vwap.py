@@ -19,11 +19,11 @@ class VWAPTPSLStates(TPSLBaseStates):
 
 
 class VWAPTPSLMM(BaseTPSLMM):
-    def __init__(self, metadata: SinglePairMMMetadata):
-        super().__init__(metadata)
+    def __init__(self, metadata: SinglePairMMMetadata, maker_key: str):
+        super().__init__(metadata, maker_key)
 
     def _update_params(self):
-        raw = get_strategy_params(self.metadata["key"])
+        raw = get_strategy_params(self.metadata.key)
 
         self.params = VWAPTPSLParams(
             tp_price=raw["tpPrice"],
@@ -39,11 +39,11 @@ class VWAPTPSLMM(BaseTPSLMM):
     def _update_states(self):
         try:
             base_market_data = DataLayerAdapter.get_market_data(
-                self.metadata["chain"], self.base_token_config.pair
+                self.metadata.chain, self.base_token_config.pair
             )
             quote_market_data = DataLayerAdapter.get_market_data(
-                self.metadata["chain"], self.quote_token_config.pair
-            )
+                self.metadata.chain, self.quote_token_config.pair
+            )   
 
             self.states = VWAPTPSLStates(
                 base_price=base_market_data["price"],
@@ -51,7 +51,7 @@ class VWAPTPSLMM(BaseTPSLMM):
             )
 
         except Exception as e:
-            send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+            send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
 
     async def run(self):
         while True:
@@ -70,7 +70,7 @@ class VWAPTPSLMM(BaseTPSLMM):
             df = cal_rolling_vwap(ohlcvs, self.params.rolling_window)
 
             # Drop rows where RSI is NaN
-            first_valid = df.dropna(subset=["rsi"]).iloc[0]
+            first_valid = df.dropna(subset=["vwap"]).iloc[0]
 
             # Extract ts and rsi
             ts = first_valid["ts"]
@@ -78,18 +78,14 @@ class VWAPTPSLMM(BaseTPSLMM):
 
             max_lag = 16 * 60 if self.params.candle_interval == "15m" else 61 * 60
             if ts + max_lag < now:
-                print(f"{self.metadata['name']}: VWAP data lagging")
+                print(f"{self.metadata.name}: VWAP data lagging")
                 continue
 
             if vwap > self.params.tp_price:
-                send_message(
-                    f"🚨 {self.metadata['name']}: VWAP surged above TP price. Tping..."
-                )
+                send_message(f"🚨 {self.metadata.name}: VWAP surged above TP price. Tping...")
                 await self._sell()
             elif vwap < self.params.sl_price:
-                send_message(
-                    f"🚨 {self.metadata['name']}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}..."
-                )
+                send_message(f"🚨 {self.metadata.name}: Price change dropped below lower bound. {"Sling" if self.params.sell_on_low else "Buying dip"}...")
                 if self.params.sell_on_low:
                     await self._sell()
                 else:

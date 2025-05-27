@@ -9,11 +9,11 @@ dotenv_path = PROJECT_ROOT / ".env"
 
 
 class ClickhouseConfig(BaseSettings):
-    host: str = Field(default="localhost", validation_alias="DL_CLICKHOUSE_HOST")
+    host: str = Field(..., validation_alias="DL_CLICKHOUSE_HOST")
     username: str = Field(..., validation_alias="DL_CLICKHOUSE_USERNAME")
     password: str = Field(..., validation_alias="DL_CLICKHOUSE_PASSWORD")
     database: str = Field(..., validation_alias="DL_CLICKHOUSE_DB")
-    port: int = Field(default=8123, validate_alias="DL_CLICKHOUSE_PORT")
+    port: int = Field(..., validation_alias="DL_CLICKHOUSE_PORT")
 
     model_config = SettingsConfigDict(env_file=dotenv_path, extra="allow")
 
