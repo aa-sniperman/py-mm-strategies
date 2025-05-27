@@ -1,5 +1,13 @@
 from typing import Optional
+from typing import List, TypedDict
 from adapters.executor.client import client
+
+
+class SwapItem(TypedDict):
+    account: str
+    recipient: str
+    amountIn: str
+    amountOutMin: str
 
 
 class ExecutorSwap:
@@ -28,4 +36,18 @@ class ExecutorSwap:
         print(body)
 
         response = await client.post("/order/swap", data=body)
+        return response.json()
+
+    async def execute_swap_in_batch(
+        chain: str, tokenIn: str, tokenOut: str, protocol: str, items: List[SwapItem]
+    ):
+        body = {
+            "chain": chain,
+            "tokenIn": tokenIn,
+            "tokenOut": tokenOut,
+            "protocol": protocol,
+            "items": items,
+        }
+
+        response = await client.post("/order/batch-swap", data=body)
         return response.json()

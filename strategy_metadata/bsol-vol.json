@@ -1,0 +1,9 @@
+{
+    "name": "TXBT Vol Maker",
+    "chain": "solana",
+    "key": "txbt-vol",
+    "type": "sol-bundle",
+    "protocol": "dex-labs",
+    "quote": "BSOL",
+    "base": "TXBT"
+}

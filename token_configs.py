@@ -94,4 +94,20 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         quote="",
         protocol="",
     ),
+    "TXBT": TokenConfigInfo(
+        chain="solana",
+        address="9KweAdQhYk7HYz8VKDjX1VxofFjkkTPEfdvQz2N7s4G4",
+        pair="967p57PHxv4xaPUFEhbu6aGaxVGEsXHJXNtYg96fbyT",
+        symbol="TXBT",
+        quote="F9NkJfxAqKBB6rqiRdXcTGyYVKgttSY8x3FsZtxadcVg",
+        protocol="dex-labs",
+    ),
+    "BSOL": TokenConfigInfo(
+        chain="solana",
+        address="F9NkJfxAqKBB6rqiRdXcTGyYVKgttSY8x3FsZtxadcVg",
+        pair="B34gLwtw1EpdaUvC8rE574zfvYXfYKb8Vw6DttS2hEfF",
+        symbol="BSOL",
+        quote="0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        protocol="dex-labs",
+    ),
 }
