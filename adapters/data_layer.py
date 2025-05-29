@@ -3,6 +3,7 @@ import clickhouse_connect
 from settings import settings
 from typing import List, Dict, TypedDict
 import json
+from schema.pair_schema import DexScreenerPair
 
 
 class MarketDataInfo(TypedDict):
@@ -43,6 +44,13 @@ dl_redis_client = redis.Redis(
 
 
 class DataLayerAdapter:
+
+    @staticmethod
+    def get_pair(chain: str, pair: str) -> MarketDataInfo:
+        key = f"pair:{chain}:dexscreener"
+        pair_data: DexScreenerPair = json.loads(dl_redis_client.hget(key, pair))
+        return pair_data
+
     @staticmethod
     def get_market_data(chain: str, pair: str) -> MarketDataInfo:
         key = f"pair:{chain}:dexscreener"
