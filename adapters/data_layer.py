@@ -8,6 +8,7 @@ import json
 class MarketDataInfo(TypedDict):
     mc: float
     price: float
+    price_by_quote: float
     volume_1h: float
     volume_24h: str
 
@@ -49,6 +50,7 @@ class DataLayerAdapter:
         return {
             "mc": float(pair_data["marketCap"]),
             "price": float(pair_data["priceUsd"]),
+            "price_by_quote": float(pair_data["priceNative"]),
             "volume_1h": float(pair_data["volume"]["h1"]),
             "volume_24h": float(pair_data["volume"]["h24"]),
         }
