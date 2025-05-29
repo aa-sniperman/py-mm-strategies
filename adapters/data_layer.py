@@ -121,3 +121,10 @@ class DataLayerAdapter:
         columns = ["ts", "o", "h", "l", "c", "v"]
 
         return [OHLCV(dict(zip(columns, row))) for row in rows]
+
+    @staticmethod
+    def get_pool_holdings(pair: str):
+        key = f"solana_pool_holding:{pair}"
+        pair_data = dl_redis_client.hgetall(key)
+
+        return pair_data

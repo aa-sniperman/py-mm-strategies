@@ -12,6 +12,11 @@ import random
 
 
 class VolMakerSolBundle(VolMakerV1):
+    # xy = (x + dx)(y - dy)
+    # 0 = ydx - xdy - dxdy
+    # dy(x + dx) = ydx
+    # dy = ydx / (x + dx)
+
     def __init__(self, metadata: VolMakerMetadata):
         super().__init__(metadata)
         self.original_makers = load_makers(metadata["key"])
@@ -25,6 +30,19 @@ class VolMakerSolBundle(VolMakerV1):
             cur_24h_vol=0,
             balances=[],
         )
+
+    async def _get_amount_out(self, token_in: str, token_out, amount_in: str):
+        pool_holding_info = DataLayerAdapter.get_pool_holdings(
+            self.base_token_config.pair
+        )
+
+        holding_in = pool_holding_info[token_in]
+        holding_out = pool_holding_info[token_out]
+        expect_amount_out = holding_out * amount_in / (holding_in + amount_in)
+        slippage = 0.1
+        min_amount_out = expect_amount_out * slippage
+
+        return min_amount_out
 
     async def _make_trade(self, sender, recipient, fund_des):
 
@@ -111,18 +129,6 @@ class VolMakerSolBundle(VolMakerV1):
                     f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
                 )
 
-                market_info = DataLayerAdapter.get_market_data(
-                    chain=self.metadata["chain"], pair=self.base_token_config.pair
-                )
-
-                price_by_quote = market_info["price_by_quote"]
-
-                min_amount_out = (
-                    trade_amount / price_by_quote
-                    if is_buy
-                    else trade_amount * price_by_quote
-                ) * (1 - 0.01)
-
                 token_in = (
                     self.quote_token_config.address
                     if is_buy
@@ -134,6 +140,10 @@ class VolMakerSolBundle(VolMakerV1):
                     else self.base_token_config.address
                 )
                 protocol = self.metadata["protocol"]
+
+                min_amount_out = self._get_amount_out(
+                    token_in=token_in, token_out=token_out, amount_in=trade_amount
+                )
 
                 res = await ExecutorSwap.execute_multi_swaps(
                     chain=self.metadata["chain"],
