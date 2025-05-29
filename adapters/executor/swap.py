@@ -4,6 +4,9 @@ from adapters.executor.client import client
 
 
 class SwapItem(TypedDict):
+    tokenIn: str
+    tokenOut: str
+    protocol: str
     account: str
     recipient: str
     amountIn: str
@@ -38,16 +41,13 @@ class ExecutorSwap:
         response = await client.post("/order/swap", data=body)
         return response.json()
 
-    async def execute_swap_in_batch(
-        chain: str, tokenIn: str, tokenOut: str, protocol: str, items: List[SwapItem]
-    ):
+    async def execute_multi_swaps(chain: str, items: List[SwapItem]):
         body = {
             "chain": chain,
-            "tokenIn": tokenIn,
-            "tokenOut": tokenOut,
-            "protocol": protocol,
             "items": items,
         }
 
-        response = await client.post("/order/batch-swap", data=body)
+        print(body)
+
+        response = await client.post("/order/multi-swap", json=body)
         return response.json()

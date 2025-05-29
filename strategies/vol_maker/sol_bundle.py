@@ -112,7 +112,7 @@ class VolMakerSolBundle(VolMakerV1):
                 )
 
                 market_info = DataLayerAdapter.get_market_data(
-                    chain=self.metadata["chain"], pair=self.base_token_config["pair"]
+                    chain=self.metadata["chain"], pair=self.base_token_config.pair
                 )
 
                 price_by_quote = market_info["price_by_quote"]
@@ -123,30 +123,37 @@ class VolMakerSolBundle(VolMakerV1):
                     else trade_amount * price_by_quote
                 ) * (1 - 0.01)
 
-                res = await ExecutorSwap.execute_swap_in_batch(
+                token_in = (
+                    self.quote_token_config.address
+                    if is_buy
+                    else self.base_token_config.address
+                )
+                token_out = (
+                    self.quote_token_config.address
+                    if not is_buy
+                    else self.base_token_config.address
+                )
+                protocol = self.metadata["protocol"]
+
+                res = await ExecutorSwap.execute_multi_swaps(
                     chain=self.metadata["chain"],
-                    protocol=self.metadata["protocol"],
-                    token_in=(
-                        self.quote_token_config.address
-                        if is_buy
-                        else self.base_token_config.address
-                    ),
-                    token_out=(
-                        self.quote_token_config.address
-                        if not is_buy
-                        else self.base_token_config.address
-                    ),
                     items=[
                         {
+                            "tokenIn": token_in,
+                            "tokenOut": token_out,
+                            "protocol": protocol,
                             "account": sender,
                             "recipient": recipient,
-                            "amountIn": str(trade_amount),
-                            "amountOutMin": str(min_amount_out),
+                            "amountIn": str(math.floor(1e9 * trade_amount) / 1e9),
+                            "amountOutMin": str(math.floor(1e9 * min_amount_out) / 1e9),
                         },
                         {
+                            "tokenIn": token_out,
+                            "tokenOut": token_in,
+                            "protocol": protocol,
                             "account": recipient,
                             "recipient": sender,
-                            "amountIn": str(min_amount_out),
+                            "amountIn": str(math.floor(1e9 * min_amount_out) / 1e9),
                             "amountOutMin": str(0),
                         },
                     ],
