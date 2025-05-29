@@ -7,6 +7,8 @@ from strategy_metadata.type import load_strategy_metadata
 import subprocess
 import concurrent.futures
 import json
+from adapters.data_layer import DataLayerAdapter
+from token_configs import TokenConfig
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -33,7 +35,7 @@ def edit_strategy_parameters(key: str, new_set: dict):
 
 
 class StrategyStatus(BaseModel):
-    name: str
+    key: str
     status: str
     metadata: dict
 
@@ -81,7 +83,7 @@ def get_all_strategies():
                 status = future.result()
 
                 strategies.append(
-                    {"name": name, "status": status, "metadata": metadata}
+                    {"key": name, "status": status, "metadata": metadata}
                 )
 
         return strategies
@@ -91,13 +93,24 @@ def get_all_strategies():
 
 
 @router.get("/{key}", response_model=dict)
-def get_strategy_parameters(key: str):
+async def get_strategy_parameters(key: str):
     """
     Return the strategy parameters
     """
     try:
         metadata = load_strategy_metadata(key)
-        strat_key = metadata["key"]
-        return get_strategy_params(strat_key)
+        strategy_key = metadata["key"]
+        chain = metadata["chain"]
+        base_config = TokenConfig[metadata["base"]]
+        pair = base_config.pair
+        strategy_params = get_strategy_params(strategy_key)
+        pair_data = DataLayerAdapter.get_pair(chain=chain, pair=pair)
+
+        return {
+            "key": strategy_key,
+            "metadata": metadata,
+            "strategyParams": strategy_params,
+            "pairData": pair_data,
+        }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
