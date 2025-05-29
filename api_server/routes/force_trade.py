@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post("/by_vol", response_model=bool)
+# @router.post("/by_vol", response_model=bool)
 async def execute_force_trade_by_vol(params: ForceTradeVolParams):
     """
     Execute the force trade by vol
@@ -20,7 +20,7 @@ async def execute_force_trade_by_vol(params: ForceTradeVolParams):
     return True
 
 
-@router.post("/by_mc", response_model=bool)
+# @router.post("/by_mc", response_model=bool)
 async def execute_force_trade_by_mc(params: ForceTradeMCParams):
     """
     Execute the force trade by mc
