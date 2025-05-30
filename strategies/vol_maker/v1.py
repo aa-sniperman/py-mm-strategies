@@ -218,11 +218,7 @@ class VolMakerV1(BaseVolMaker):
 
         trade_amount = math.floor(1e9 * trade_amount) / 1e9
 
-        attempts = 0
-        success = False
-
-        while attempts < 3 and success is False:
-            try:
+        try:
                 print(
                     f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
                 )
@@ -247,11 +243,8 @@ class VolMakerV1(BaseVolMaker):
 
                 print(res)
 
-                success = True
-            except Exception as e:
-                send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
-                attempts += 1
-                time.sleep(5)
+        except Exception as e:
+            send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
 
         time.sleep(random.randint(10, 50) * self.params.timescale / 1000)
 
