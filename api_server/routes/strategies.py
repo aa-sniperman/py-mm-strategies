@@ -9,6 +9,7 @@ import concurrent.futures
 import json
 from adapters.data_layer import DataLayerAdapter
 from token_configs import TokenConfig
+from circus.client import CircusClient
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -41,21 +42,13 @@ class StrategyStatus(BaseModel):
 
 
 def get_status(name: str) -> str:
+    client = CircusClient(endpoint="tcp://127.0.0.1:5555")
     try:
-        result = subprocess.run(
-            ["circusctl", "status", name],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-        )
-        if result.returncode == 0:
-            status_line = result.stdout.strip()
-            return status_line
-        else:
-            return "unknown"
-    except Exception:
+        res = client.send_message("status", name=name)
+        return res.get("status", "unknown")
+    except Exception as e:
+        print(f"Error getting status: {e}")
         return "error"
-
 
 @router.get("", response_model=List[StrategyStatus])
 def get_all_strategies():
