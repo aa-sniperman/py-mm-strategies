@@ -19,10 +19,10 @@ class VolMakerSolBundle(VolMakerV1):
 
     def __init__(self, metadata: VolMakerMetadata):
         super().__init__(metadata)
-        self.original_makers = load_makers(metadata["key"])
+        self.original_makers = load_makers(metadata.key)
         self.makers = []
-        self.base_token_config = TokenConfig[metadata["base"]]
-        self.quote_token_config = TokenConfig[metadata["quote"]]
+        self.base_token_config = TokenConfig[metadata.base]
+        self.quote_token_config = TokenConfig[metadata.quote]
         self.states = VolMakerV1States(
             quote_price=0,
             base_price=0,
@@ -47,12 +47,12 @@ class VolMakerSolBundle(VolMakerV1):
     async def _make_trade(self, sender, recipient, fund_des):
 
         sender_quote_bal = DataLayerAdapter.get_balance(
-            self.metadata["chain"], sender, self.quote_token_config.address
+            self.metadata.chain, sender, self.quote_token_config.address
         )
         sender_quote_value = sender_quote_bal * self.states.quote_price
 
         sender_base_bal = DataLayerAdapter.get_balance(
-            self.metadata["chain"], sender, self.base_token_config.address
+            self.metadata.chain, sender, self.base_token_config.address
         )
         sender_base_value = sender_base_bal * self.states.base_price
 
@@ -68,7 +68,7 @@ class VolMakerSolBundle(VolMakerV1):
             if sender_quote_bal > 0.001:
                 try:
                     await ExecutorTokenHelper.transfer_token(
-                        self.metadata["chain"],
+                        self.metadata.chain,
                         sender,
                         self.quote_token_config.address,
                         math.floor((sender_quote_bal - 0.001) * 1e9) / 1e9,
@@ -76,18 +76,18 @@ class VolMakerSolBundle(VolMakerV1):
                     )
                     time.sleep(10)
                 except Exception as e:
-                    send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+                    send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
             if sender_base_bal > 0.001:
                 try:
                     await ExecutorTokenHelper.transfer_token(
-                        self.metadata["chain"],
+                        self.metadata.chain,
                         sender,
                         self.base_token_config.address,
                         math.floor((sender_base_bal - 0.001) * 1e9) / 1e9,
                         fund_des,
                     )
                 except Exception as e:
-                    send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+                    send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
             return
 
         is_buy: bool
@@ -139,14 +139,14 @@ class VolMakerSolBundle(VolMakerV1):
                     if not is_buy
                     else self.base_token_config.address
                 )
-                protocol = self.metadata["protocol"]
+                protocol = self.metadata.protocol
 
                 min_amount_out = self._get_amount_out(
                     token_in=token_in, token_out=token_out, amount_in=trade_amount
                 )
 
                 res = await ExecutorSwap.execute_multi_swaps(
-                    chain=self.metadata["chain"],
+                    chain=self.metadata.chain,
                     items=[
                         {
                             "tokenIn": token_in,
@@ -173,7 +173,7 @@ class VolMakerSolBundle(VolMakerV1):
 
                 success = True
             except Exception as e:
-                send_message(f"🚨 Error at {self.metadata['name']}: {str(e)}")
+                send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
                 attempts += 1
                 time.sleep(5)
 

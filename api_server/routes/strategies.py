@@ -28,7 +28,7 @@ def edit_strategy_parameters(key: str, new_set: dict):
     """
     try:
         metadata = load_strategy_metadata(key)
-        strat_key = metadata["key"]
+        strat_key = metadata.key
         return set_strategy_params(strat_key, new_set)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -99,9 +99,9 @@ async def get_strategy_parameters(key: str):
     """
     try:
         metadata = load_strategy_metadata(key)
-        strategy_key = metadata["key"]
-        chain = metadata["chain"]
-        base_config = TokenConfig[metadata["base"]]
+        strategy_key = metadata.key
+        chain = metadata.chain
+        base_config = TokenConfig[metadata.base]
         pair = base_config.pair
         strategy_params = get_strategy_params(strategy_key)
         pair_data = DataLayerAdapter.get_pair(chain=chain, pair=pair)

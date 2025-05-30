@@ -33,10 +33,10 @@ class VolMakerV1States(BaseModel):
 class VolMakerV1(BaseVolMaker):
     def __init__(self, metadata: VolMakerMetadata):
         super().__init__(metadata)
-        self.original_makers = load_makers(metadata["key"])
+        self.original_makers = load_makers(metadata.key)
         self.makers = []
-        self.base_token_config = TokenConfig[metadata["base"]]
-        self.quote_token_config = TokenConfig[metadata["quote"]]
+        self.base_token_config = TokenConfig[metadata.base]
+        self.quote_token_config = TokenConfig[metadata.quote]
         self.states = VolMakerV1States(
             quote_price=0,
             base_price=0,
@@ -230,7 +230,7 @@ class VolMakerV1(BaseVolMaker):
                 res = await ExecutorSwap.execute_swap(
                     chain=self.metadata.chain,
                     account=sender,
-                    protocol=self.metadata["protocol"],
+                    protocol=self.metadata.protocol,
                     token_in=(
                         self.quote_token_config.address
                         if is_buy
