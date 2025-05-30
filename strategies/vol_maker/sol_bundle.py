@@ -31,16 +31,16 @@ class VolMakerSolBundle(VolMakerV1):
             balances=[],
         )
 
-    async def _get_amount_out(self, token_in: str, token_out, amount_in: str):
+    def _get_amount_out(self, token_in: str, token_out, amount_in: str):
         pool_holding_info = DataLayerAdapter.get_pool_holdings(
             self.base_token_config.pair
         )
 
-        holding_in = pool_holding_info[token_in]
-        holding_out = pool_holding_info[token_out]
+        holding_in = float(pool_holding_info[token_in])
+        holding_out = float(pool_holding_info[token_out])
         expect_amount_out = holding_out * amount_in / (holding_in + amount_in)
-        slippage = 0.1
-        min_amount_out = expect_amount_out * slippage
+        slippage = 0.15
+        min_amount_out = expect_amount_out * (1 - slippage / 100)
 
         return min_amount_out
 
