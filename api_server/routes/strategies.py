@@ -3,7 +3,7 @@ from typing import List
 from pathlib import Path
 from pydantic import BaseModel
 from parameters.client import get_strategy_params, set_strategy_params
-from strategy_metadata.type import load_strategy_metadata
+from strategy_metadata.type import load_strategy_metadata, StrategyMetadata, VolMakerMetadata
 import subprocess
 import concurrent.futures
 import json
@@ -27,7 +27,7 @@ def edit_strategy_parameters(key: str, new_set: dict):
     Edit parameter of the specified strategy
     """
     try:
-        metadata = load_strategy_metadata(key)
+        metadata = load_strategy_metadata(key, StrategyMetadata)
         strat_key = metadata.key
         return set_strategy_params(strat_key, new_set)
     except Exception as e:
@@ -98,7 +98,7 @@ async def get_strategy_parameters(key: str):
     Return the strategy parameters
     """
     try:
-        metadata = load_strategy_metadata(key)
+        metadata = load_strategy_metadata(key, VolMakerMetadata)
         strategy_key = metadata.key
         chain = metadata.chain
         base_config = TokenConfig[metadata.base]

@@ -110,4 +110,12 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         quote="0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
         protocol="dex-labs",
     ),
+    "WMETIS": TokenConfigInfo(
+        chain="metis",
+        address="0x75cb093E4D61d2A2e65D8e0BBb01DE8d89b53481",
+        pair="0xA4E4949e0cccd8282f30e7E113D8A551A1eD1aeb",
+        symbol="WMETIS",
+        quote="0xEA32A96608495e54156Ae48931A7c20f0dcc1a21",
+        protocol="hercules-v3",
+    )
 }
