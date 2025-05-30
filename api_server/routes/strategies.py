@@ -50,7 +50,7 @@ def get_status(name: str) -> str:
         )
         if result.returncode == 0:
             status_line = result.stdout.strip()
-            return status_line.split(": ")[1] if ": " in status_line else "unknown"
+            return status_line
         else:
             return "unknown"
     except Exception:
