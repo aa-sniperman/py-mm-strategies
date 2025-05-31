@@ -265,10 +265,10 @@ class VolMakerV1(BaseVolMaker):
             print(
                 f"Current vol: ${self.states.cur_1h_vol}. Target vol: ${self.params.target_vol_1h}"
             )
-            # if vol_ok:
-            #     print("Done")
-            #     time.sleep(30)
-            #     continue
+            if vol_ok:
+                print("Done")
+                time.sleep(30)
+                continue
 
             number_of_trades = random.randint(2, 4)
 
