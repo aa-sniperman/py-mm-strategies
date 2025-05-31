@@ -223,7 +223,7 @@ class VolMakerV1(BaseVolMaker):
                     f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
                 )
 
-                res = await ExecutorSwap.execute_swap(
+                await ExecutorSwap.execute_swap(
                     chain=self.metadata.chain,
                     account=sender,
                     protocol=self.metadata.protocol,
@@ -241,10 +241,9 @@ class VolMakerV1(BaseVolMaker):
                     recipient=recipient,
                 )
 
-                print(res)
-
         except Exception as e:
-            send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
+            if e is not None and len(str(e)) > 0:
+                send_message(f"🚨 Error at {self.metadata.name}: {str(e)}")
 
         time.sleep(random.randint(10, 50) * self.params.timescale / 1000)
 
@@ -266,10 +265,10 @@ class VolMakerV1(BaseVolMaker):
             print(
                 f"Current vol: ${self.states.cur_1h_vol}. Target vol: ${self.params.target_vol_1h}"
             )
-            if vol_ok:
-                print("Done")
-                time.sleep(30)
-                continue
+            # if vol_ok:
+            #     print("Done")
+            #     time.sleep(30)
+            #     continue
 
             number_of_trades = random.randint(2, 4)
 
