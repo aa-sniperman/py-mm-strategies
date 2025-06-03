@@ -135,6 +135,8 @@ class VolMakerTron(VolMakerV1):
         time.sleep(random.randint(10, 50) * self.params.timescale / 1000)
 
     async def run(self):
+        is_accumulating = False
+
         while True:
             self._update_params()
             self._update_states()
@@ -153,7 +155,7 @@ class VolMakerTron(VolMakerV1):
             print(f"Making vol with {number_of_trades} random trades...")
             for i in range(number_of_trades):
                 self._update_states()
-                wallets = self._pick_sender_and_recipient()
+                wallets = self._pick_sender_and_recipient(is_accumulating)
                 if wallets is not None:
                     print(
                         f"Picked sender: {wallets['sender']}. Picked recipient: {wallets['recipient']}"
