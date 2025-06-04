@@ -1,11 +1,9 @@
-import sys
-from strategy_metadata.type import SinglePairMMMetadata
-from strategies.trading.rsi_range import RSIRangeConfig, RSIRangeMM
-from parameters.client import set_strategy_params
-from strategies.base import BaseStrategy
-from strategies.vol_maker.v1 import VolMakerV1
-from adapters.data_layer import DataLayerAdapter
 import asyncio
+from parameters.client import get_strategy_params, set_strategy_params
+from strategy_metadata.client import set_strategy_metadata
+from pathlib import Path
+import json
+
 
 
 async def main():
@@ -39,10 +37,22 @@ async def main():
     # runner = RSIRangeMM(metadata=metadata, maker_key="eqb")
     # await runner.run()
 
-    data = DataLayerAdapter.get_pool_holdings(
-        "967p57PHxv4xaPUFEhbu6aGaxVGEsXHJXNtYg96fbyT"
-    )
-    print(data["9KweAdQhYk7HYz8VKDjX1VxofFjkkTPEfdvQz2N7s4G4"])
+    strat_keys = [
+        "eqb",
+        "pumpe",
+        "sunana",
+        "torch",
+        "txbt"
+    ]
+    PROJECT_ROOT = Path(__file__).resolve().parents[0]
+
+    for strategy_key in strat_keys:
+        file_path = PROJECT_ROOT / f"strategy_metadata/{strategy_key}.json"
+        with open(file_path, "r") as f:
+            metadata = json.load(f)
+            set_strategy_metadata(strategy_key, metadata)
+        params = get_strategy_params(strategy_key)
+        set_strategy_params(strategy_key, params)
 
 
 if __name__ == "__main__":

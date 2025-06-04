@@ -1,5 +1,4 @@
 import redis
-import json
 from settings import settings
 
 params_redis_client = redis.Redis(
@@ -15,11 +14,13 @@ params_redis_client = redis.Redis(
 
 
 def get_strategy_params(strategy_key: str):
-    return params_redis_client.hgetall(strategy_key)
+    redis_key = f"params:{strategy_key}"
+    return params_redis_client.hgetall(redis_key)
 
 
 def set_strategy_params(strategy_key: str, new_set: dict):
-    current_set = params_redis_client.hgetall(strategy_key)
+    redis_key = f"params:{strategy_key}"
+    current_set = params_redis_client.hgetall(redis_key)
 
     # Merge the current set with the new set
     updated_set = {**current_set, **new_set}
@@ -29,6 +30,6 @@ def set_strategy_params(strategy_key: str, new_set: dict):
 
     # Update Redis
     if updated_set:
-        params_redis_client.hset(strategy_key, mapping=updated_set)
+        params_redis_client.hset(redis_key, mapping=updated_set)
 
     return updated_set
