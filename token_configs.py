@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from typing import Dict
+from parameters.client import params_redis_client
 
 NATIVE = "0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
 
@@ -11,6 +12,27 @@ class TokenConfigInfo(BaseModel):
     symbol: str
     quote: str
     protocol: str
+
+
+def get_token_config(key: str):
+    redis_key = f"token_config:{key}"
+    raw_data = params_redis_client.hgetall(redis_key)
+
+    return TokenConfigInfo(**raw_data)
+
+
+def set_token_config(key: str, new_set: dict):
+    redis_key = f"token_config:{key}"
+    current_set = params_redis_client.hgetall(redis_key)
+
+    updated_set = {**current_set, **new_set}
+
+    updated_set = {k: str(v) for k, v in updated_set.items()}
+
+    if updated_set:
+        params_redis_client.hset(redis_key, mapping=updated_set)
+
+    return updated_set
 
 
 TokenConfig: Dict[str, TokenConfigInfo] = {

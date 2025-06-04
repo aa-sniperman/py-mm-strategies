@@ -3,7 +3,7 @@ from parameters.client import get_strategy_params, set_strategy_params
 from makers.loader import set_makers, load_makers
 from pathlib import Path
 import json
-
+from token_configs import TokenConfig, set_token_config, get_token_config
 
 
 async def main():
@@ -37,13 +37,7 @@ async def main():
     # runner = RSIRangeMM(metadata=metadata, maker_key="eqb")
     # await runner.run()
 
-    strat_keys = [
-        "eqb",
-        "pumpe",
-        "sunana",
-        "torch",
-        "txbt"
-    ]
+    strat_keys = ["eqb", "pumpe", "sunana", "torch", "txbt"]
     PROJECT_ROOT = Path(__file__).resolve().parents[0]
 
     for strategy_key in strat_keys:
