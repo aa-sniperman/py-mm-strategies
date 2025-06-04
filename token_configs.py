@@ -117,5 +117,13 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         symbol="WMETIS",
         quote="0xEA32A96608495e54156Ae48931A7c20f0dcc1a21",
         protocol="hercules-v3",
+    ),
+    "WBERA": TokenConfigInfo(
+        chain="berachain",
+        address="0x6969696969696969696969696969696969696969",
+        pair="0x2c4a603A2aA5596287A06886862dc29d56DbC354",
+        symbol="WBERA",
+        quote="0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
+        protocol="kodiak-v2"
     )
 }
