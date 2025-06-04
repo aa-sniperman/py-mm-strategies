@@ -5,6 +5,8 @@ from pathlib import Path
 import json
 from token_configs import TokenConfig, set_token_config, get_token_config
 from strategy_metadata.client import add_metadata_key
+from adapters.executor.token import ExecutorTokenHelper
+from adapters.dexscreener import DexScreenerAdapter
 
 
 async def main():
@@ -38,13 +40,20 @@ async def main():
     # runner = RSIRangeMM(metadata=metadata, maker_key="eqb")
     # await runner.run()
 
-    strat_keys = ["eqb", "pumpe", "sunana", "torch", "txbt"]
-    PROJECT_ROOT = Path(__file__).resolve().parents[0]
+    # strat_keys = ["eqb", "pumpe", "sunana", "torch", "txbt"]
+    # PROJECT_ROOT = Path(__file__).resolve().parents[0]
 
-    for strategy_key in strat_keys:
-        # makers = load_makers(strategy_key)
-        # print(makers)
-        add_metadata_key(strategy_key)
+    # for strategy_key in strat_keys:
+    # makers = load_makers(strategy_key)
+    # print(makers)
+    # add_metadata_key(strategy_key)
+
+    print(
+        await DexScreenerAdapter.fetch_pair(
+            "arbitrum",
+            "0x69B545997BD6aBC81CaE39Fe9bdC94d2242a0f92",
+        )
+    )
 
 
 if __name__ == "__main__":
