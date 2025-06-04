@@ -72,6 +72,7 @@ class VolMakerV1(BaseVolMaker):
                 ["base", "quote"],
             )
             balances: list[float] = []
+
             for maker in self.original_makers:
                 balances.append(
                     raw_balances[maker]["base"] * base_market_data["price"]

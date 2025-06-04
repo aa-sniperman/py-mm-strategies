@@ -1,6 +1,6 @@
 import asyncio
 from parameters.client import get_strategy_params, set_strategy_params
-from strategy_metadata.client import set_strategy_metadata
+from makers.loader import set_makers, load_makers
 from pathlib import Path
 import json
 
@@ -47,12 +47,8 @@ async def main():
     PROJECT_ROOT = Path(__file__).resolve().parents[0]
 
     for strategy_key in strat_keys:
-        file_path = PROJECT_ROOT / f"strategy_metadata/{strategy_key}.json"
-        with open(file_path, "r") as f:
-            metadata = json.load(f)
-            set_strategy_metadata(strategy_key, metadata)
-        params = get_strategy_params(strategy_key)
-        set_strategy_params(strategy_key, params)
+        makers = load_makers(strategy_key)
+        print(makers)
 
 
 if __name__ == "__main__":
