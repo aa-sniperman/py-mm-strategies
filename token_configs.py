@@ -75,7 +75,15 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         address="TXme8qsGdorboWFTX3E2XBWkmLNq4h7Kbx",
         pair="TJ9g2SzMSH7yV71AtpEjLa4HQyRkSGYHW4",
         symbol="SUNANA",
-        quote="",
+        quote="TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+        protocol="sunswap-v2",
+    ),
+    "WTRX": TokenConfigInfo(
+        chain="tron",
+        address="TNUC9Qb1rRpS5CbWLmNMxXBjyFoydXjWFR",
+        pair="TFGDbUyP8xez44C76fin3bn3Ss6jugoUwJ",
+        symbol="WTRX",
+        quote="TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t",
         protocol="sunswap-v2",
     ),
     "TORCH": TokenConfigInfo(
@@ -107,7 +115,7 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         address="F9NkJfxAqKBB6rqiRdXcTGyYVKgttSY8x3FsZtxadcVg",
         pair="B34gLwtw1EpdaUvC8rE574zfvYXfYKb8Vw6DttS2hEfF",
         symbol="BSOL",
-        quote="0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        quote="So11111111111111111111111111111111111111112",
         protocol="dex-labs",
     ),
     "WMETIS": TokenConfigInfo(
@@ -124,6 +132,6 @@ TokenConfig: Dict[str, TokenConfigInfo] = {
         pair="0x2c4a603A2aA5596287A06886862dc29d56DbC354",
         symbol="WBERA",
         quote="0xFCBD14DC51f0A4d49d5E53C2E0950e0bC26d0Dce",
-        protocol="kodiak-v2"
-    )
+        protocol="kodiak-v2",
+    ),
 }

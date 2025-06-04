@@ -220,27 +220,29 @@ class VolMakerV1(BaseVolMaker):
         trade_amount = math.floor(1e9 * trade_amount) / 1e9
 
         try:
-                print(
-                    f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
-                )
+            print(
+                f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
+            )
 
-                await ExecutorSwap.execute_swap(
-                    chain=self.metadata.chain,
-                    account=sender,
-                    protocol=self.metadata.protocol,
-                    token_in=(
-                        self.quote_token_config.address
-                        if is_buy
-                        else self.base_token_config.address
-                    ),
-                    token_out=(
-                        self.quote_token_config.address
-                        if not is_buy
-                        else self.base_token_config.address
-                    ),
-                    amount_in=trade_amount,
-                    recipient=recipient,
-                )
+            res = await ExecutorSwap.execute_swap(
+                chain=self.metadata.chain,
+                account=sender,
+                protocol=self.metadata.protocol,
+                token_in=(
+                    self.quote_token_config.address
+                    if is_buy
+                    else self.base_token_config.address
+                ),
+                token_out=(
+                    self.quote_token_config.address
+                    if not is_buy
+                    else self.base_token_config.address
+                ),
+                amount_in=trade_amount,
+                recipient=recipient,
+            )
+
+            print(res)
 
         except Exception as e:
             if e is not None and len(str(e)) > 0:

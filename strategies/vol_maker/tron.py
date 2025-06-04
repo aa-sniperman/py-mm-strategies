@@ -12,6 +12,7 @@ import random
 
 
 class VolMakerTron(VolMakerV1):
+
     def _pick_sender_and_recipient(self, is_accumulating: bool):
         min_trade_size = self.params.min_trade_size
 
@@ -103,14 +104,14 @@ class VolMakerTron(VolMakerV1):
         if trade_amount <= 0:
             return
 
-        trade_amount = math.floor(1e9 * trade_amount) / 1e9
+        trade_amount = math.floor(1e6 * trade_amount) / 1e6
 
         try:
             print(
                 f"Wallet {sender} {'buying' if is_buy else 'selling'} with {trade_amount}, recipient: {recipient}"
             )
 
-            await ExecutorSwap.execute_swap(
+            res = await ExecutorSwap.execute_swap(
                 chain=self.metadata.chain,
                 account=sender,
                 protocol=self.metadata.protocol,
@@ -127,6 +128,8 @@ class VolMakerTron(VolMakerV1):
                 amount_in=trade_amount,
                 recipient=recipient,
             )
+
+            print(res)
 
         except Exception as e:
             if e is not None and len(str(e)) > 0:

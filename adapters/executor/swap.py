@@ -37,7 +37,8 @@ class ExecutorSwap:
         }
 
         print(body)
-        await client.post("/order/swap", data=body)
+        response = await client.post("/order/swap", data=body)
+        return response.json()
 
     async def execute_multi_swaps(chain: str, items: List[SwapItem]):
         body = {
