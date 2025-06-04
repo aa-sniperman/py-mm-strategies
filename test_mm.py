@@ -4,6 +4,7 @@ from makers.loader import set_makers, load_makers
 from pathlib import Path
 import json
 from token_configs import TokenConfig, set_token_config, get_token_config
+from strategy_metadata.client import add_metadata_key
 
 
 async def main():
@@ -41,8 +42,9 @@ async def main():
     PROJECT_ROOT = Path(__file__).resolve().parents[0]
 
     for strategy_key in strat_keys:
-        makers = load_makers(strategy_key)
-        print(makers)
+        # makers = load_makers(strategy_key)
+        # print(makers)
+        add_metadata_key(strategy_key)
 
 
 if __name__ == "__main__":

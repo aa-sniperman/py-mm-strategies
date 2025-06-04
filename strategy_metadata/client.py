@@ -6,6 +6,17 @@ from typing import Type, TypeVar
 T = TypeVar("T", bound=BaseModel)  # Ensures only Pydantic models can be passed
 
 
+def get_all_metadata_keys():
+    redis_key = f"metadata_keys"
+    members = params_redis_client.smembers(redis_key)
+    return [m for m in members]
+
+
+def add_metadata_key(value: str):
+    redis_key = f"metadata_keys"
+    params_redis_client.sadd(redis_key, *[value])
+
+
 def get_strategy_metadata(strategy_key: str, model_class: Type[T]) -> T:
     redis_key = f"metadata:{strategy_key}"
     raw_data = params_redis_client.hgetall(redis_key)
