@@ -1,8 +1,16 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
-from parameters.client import get_strategy_params, set_strategy_params, params_redis_client
+from parameters.client import (
+    get_strategy_params,
+    set_strategy_params,
+    params_redis_client,
+)
 from strategy_metadata.type import StrategyMetadata, VolMakerMetadata
-from strategy_metadata.client import get_strategy_metadata, set_strategy_metadata
+from strategy_metadata.client import (
+    get_strategy_metadata,
+    set_strategy_metadata,
+    add_metadata_key,
+)
 from makers.loader import set_makers
 import concurrent.futures
 from adapters.data_layer import DataLayerAdapter
@@ -17,6 +25,7 @@ router = APIRouter(
     tags=["strategies"],
     responses={404: {"description": "Not found"}},
 )
+
 
 @router.post("/{key}", response_model=dict)
 def edit_strategy_parameters(key: str, new_set: dict):
@@ -35,6 +44,7 @@ class StrategyStatus(BaseModel):
     key: str
     status: str
     metadata: StrategyMetadata
+
 
 def spawn_circus_watcher(name: str, flag: str = "value"):
     try:
@@ -71,6 +81,7 @@ def spawn_circus_watcher(name: str, flag: str = "value"):
         print(f"Failed to spawn watcher '{name}': {e}")
         return {"status": "error", "reason": str(e)}
 
+
 def get_status(name: str) -> str:
     client = CircusClient(endpoint="tcp://127.0.0.1:5555")
     try:
@@ -80,6 +91,7 @@ def get_status(name: str) -> str:
         print(f"Error getting status: {e}")
         return "error"
 
+
 @router.get("", response_model=List[StrategyStatus])
 def get_all_strategies():
     try:
@@ -87,12 +99,14 @@ def get_all_strategies():
         strategy_keys = []
 
         while True:
-            cursor, keys = params_redis_client.scan(cursor=cursor, match='metadata:*', count=100)
+            cursor, keys = params_redis_client.scan(
+                cursor=cursor, match="metadata:*", count=100
+            )
             strategy_keys.extend(keys)
             if cursor == 0:
                 break
 
-        strategy_keys = [key.replace('metadata:', '') for key in strategy_keys]
+        strategy_keys = [key.replace("metadata:", "") for key in strategy_keys]
 
         strategies = []
 
@@ -141,10 +155,12 @@ async def get_strategy_parameters(key: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+
 class NewStrategyRequest(BaseModel):
     metadata: Dict[str, Any] = Field(..., description="Strategy metadata")
     params: Dict[str, Any] = Field(..., description="Strategy parameters")
     makers: List[str] = Field(..., description="List of maker wallet addresses")
+
 
 @router.post("/new-strategy")
 async def create_new_strategy(request: NewStrategyRequest = Body(...)):
@@ -156,16 +172,21 @@ async def create_new_strategy(request: NewStrategyRequest = Body(...)):
     existing = params_redis_client.hexists(f"metadata:{strat_key}", "key")
 
     if existing:
-        raise HTTPException(status_code=400, detail=f"Strategy with key {strat_key} already exists")
-    
+        raise HTTPException(
+            status_code=400, detail=f"Strategy with key {strat_key} already exists"
+        )
+
     type = metadata["type"]
 
     if type in ["vol-v1", "vol-sol-bundle", "tron-vol"]:
         VolMakerMetadata.model_validate(metadata)
         VolMakerV1Config.model_validate(params)
     else:
-        raise HTTPException(status_code=400, detail=f"Strategy type {type} is not supported")
-
+        raise HTTPException(
+            status_code=400, detail=f"Strategy type {type} is not supported"
+        )
+    
+    add_metadata_key(strat_key)
     set_strategy_metadata(strat_key, metadata)
     set_strategy_params(strat_key, params)
     set_makers(strat_key, makers)
@@ -176,5 +197,7 @@ async def create_new_strategy(request: NewStrategyRequest = Body(...)):
         params_redis_client.delete(f"metadata:{strat_key}")
         params_redis_client.delete(f"params:{strat_key}")
         params_redis_client.delete(f"makers:{strat_key}")
-        raise HTTPException(status_code=500, detail=f"Failed to spawn process: {str(e)}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to spawn process: {str(e)}"
+        )
     return {"status": "ok", "strategy": strat_key}

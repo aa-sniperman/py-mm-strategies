@@ -4,6 +4,21 @@ from adapters.executor.client import client
 
 class ExecutorTokenHelper:
     @staticmethod
+    async def fetch_token(chain: str, token: str):
+        params = {"address": token, "chain": chain}
+        response = await client.get("/token", params=params)
+        if not response.content or response.content is None:
+            return None
+        return response.json()
+
+    async def fetch_pair(chain: str, pair: str):
+        params = {"pair": pair, "chain": chain}
+        response = await client.get("/pair", params=params)
+        if not response.content or response.content is None:
+            return None
+        return response.json()
+
+    @staticmethod
     async def unwrap(chain: str, account: str, amount: float):
         body = {"chain": chain, "account": account, "amount": str(amount)}
         response = await client.post("/order/unwrap", data=body)

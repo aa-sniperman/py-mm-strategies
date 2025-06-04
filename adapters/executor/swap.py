@@ -40,6 +40,7 @@ class ExecutorSwap:
         response = await client.post("/order/swap", data=body)
         return response.json()
 
+    @staticmethod
     async def execute_multi_swaps(chain: str, items: List[SwapItem]):
         body = {
             "chain": chain,
