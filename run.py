@@ -8,6 +8,10 @@ from strategies.base import BaseStrategy
 from strategies.vol_maker.v1 import VolMakerV1
 from strategies.vol_maker.sol_bundle import VolMakerSolBundle
 from strategies.vol_maker.tron import VolMakerTron
+from strategies.arbitrageur.dex_dex import (
+    ArbitrageurDex2Dex,
+    ArbitrageurDex2DexMetadata,
+)
 import asyncio
 
 
@@ -16,13 +20,13 @@ async def main(strat_key: str):
     runner: BaseStrategy
     if metadata.type == "vol-v1":
         runner = VolMakerV1(get_strategy_metadata(strat_key, VolMakerMetadata))
-    if metadata.type == "vol-sol-bundle":
-        runner = VolMakerSolBundle(
-            get_strategy_metadata(strat_key, VolMakerMetadata)
-        )
-    if metadata.type == "tron-vol":
-        runner = VolMakerTron(
-            get_strategy_metadata(strat_key, VolMakerMetadata)
+    elif metadata.type == "vol-sol-bundle":
+        runner = VolMakerSolBundle(get_strategy_metadata(strat_key, VolMakerMetadata))
+    elif metadata.type == "tron-vol":
+        runner = VolMakerTron(get_strategy_metadata(strat_key, VolMakerMetadata))
+    elif metadata.type == "dex-dex-arb":
+        runner = ArbitrageurDex2Dex(
+            get_strategy_metadata(strat_key, ArbitrageurDex2DexMetadata)
         )
 
     if runner is not None:

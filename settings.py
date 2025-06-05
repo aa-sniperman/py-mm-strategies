@@ -7,6 +7,11 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 PROJECT_ROOT = Path(__file__).resolve().parents[0]
 dotenv_path = PROJECT_ROOT / ".env"
 
+class The20sConfig(BaseSettings):
+    key: str = Field(..., validation_alias="THE20S_KEY")
+    endpoint: str = Field(..., validation_alias="THE20S_ENDPOINT")
+
+    model_config = SettingsConfigDict(env_file=dotenv_path, extra="allow")
 
 class ClickhouseConfig(BaseSettings):
     host: str = Field(..., validation_alias="DL_CLICKHOUSE_HOST")
@@ -62,6 +67,7 @@ class Settings(BaseSettings):
     executor: ExecutorConfig = Field(default_factory=ExecutorConfig)
     telegram: TelegramConfig = Field(default_factory=TelegramConfig)
     api: ApiConfig = Field(default_factory=ApiConfig)
+    the20s: The20sConfig = Field(default_factory=The20sConfig)
 
 
 # Instantiate settings

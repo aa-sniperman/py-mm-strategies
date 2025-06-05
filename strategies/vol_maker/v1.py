@@ -46,7 +46,6 @@ class VolMakerV1(BaseVolMaker):
         )
 
     def _update_params(self):
-        print(self.metadata)
         raw = get_strategy_params(self.metadata.key)
 
         self.params = VolMakerV1Config(
